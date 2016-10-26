@@ -4,7 +4,7 @@ use Moose;
 
 # REST IO stuff here
 use IO::Socket::SSL qw( SSL_VERIFY_NONE );
-use LWP::InternalUserAgent;
+use LWP::UserAgent;
 use XML::Simple;
 
 # Generics
@@ -30,8 +30,8 @@ BEGIN {
 	
 	$ERROR = ""; # TODO: Document error properly!
 	%actions = ( 	"version" => "/Rest/Common/AcsVersion",
-					"serviceLocation" => "/Rest/Common/ServiceLocation",
-					"errorMessage" => "/Rest/Common/ErrorMessage",
+			"serviceLocation" => "/Rest/Common/ServiceLocation",
+			"errorMessage" => "/Rest/Common/ErrorMessage",
 				);
 }
 
@@ -64,17 +64,17 @@ has 'port' => (
 has 'mock' => (
 	is => 'rw',
 	isa => 'Str',
-	default => '1',
+	default => '0',
 	);    
     
 sub internalusers # No Moose here :(
 {	my $self = shift;
-    $ERROR = "";
+        $ERROR = "";
 	if (@_)
 	{ my %args = @_; 
 	  $self->{"InternalUsers"} = $args{"internalusers"};
-      if ($self->mock())
-      { return $self->{"InternalUsers"}; }      
+          if ($self->mock())
+          { return $self->{"InternalUsers"}; }      
 	  if ($args{"id"})
 	  { $self->{"InternalUsers"} = $self->query("InternalUser","id",$args{"id"}); }
 	} else
@@ -195,7 +195,7 @@ sub query
   if ($self->ssl)
   { $hostname = "https://$hostname"; } else
   { $hostname = "http://$hostname"; }
-  $hostname = ":".$self->port if $self->port;
+  $hostname .= ":".$self->port if $self->port;
   my $action = "";
   my $mode = "";
   my $accepttype ="";
@@ -260,12 +260,13 @@ sub query
   }
   
   $hostname = $hostname . $action;
-  my $useragent = LWP::InternalUserAgent->new (ssl_opts => $self->ssl_options);
-  my $request = HTTP::Request->new(GET => $hostname, Accept => "application/vnd.com.cisco.ise.identity.$accepttype.1.0+xml" );
-  $request->header('Authorization' => "Basic $credentials");
+  my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
+  my $request = HTTP::Request->new(GET => $hostname );
+  $request->header('Authorization' => "Basic $credentials", Accept => "application/vnd.com.cisco.ise.identity.$accepttype.1.0+xml");
   my $result = $useragent->request($request);
   if ($result->code eq "400") { $ERROR = "Bad Request - HTTP Status: 400"; }
   if ($result->code eq "410") { $ERROR = "Unknown $type queried by name or ID - HTTP Status: 410"; }  
+  warn $result->content;
   $self->parse_xml($mode, $result->content);
 }
 
@@ -278,40 +279,46 @@ sub create
   if ($self->ssl)
   { $hostname = "https://$hostname"; } else
   { $hostname = "http://$hostname"; }
-  $hostname = ":".$self->port if $self->port;
+  $hostname .= ":".$self->port if $self->port;
   my $action = "";
   my $data = "";
+  my $accepttype = "";
   my $first = $entries[0];
   while(@entries)
   { my $record = shift @entries; 
     if (ref($record) eq "Net::Cisco::ISE::InternalUser")
     { $action = $Net::Cisco::ISE::InternalUser::actions{"create"}; 
+      $accepttype = "internaluser";
     }
 
     if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
     { $action = $Net::Cisco::ISE::IdentityGroup::actions{"create"}; 
+      $accepttype = "identitygroup";
     }
 
     if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
     { $action = $Net::Cisco::ISE::NetworkDevice::actions{"create"}; 
+      $accepttype = "networkdevice";
     }
   
     if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
     { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"create"}; 
+      $accepttype = "networkdevicegroup";
     }
 
     if (ref($record) eq "Net::Cisco::ISE::Endpoint")
     { $action = $Net::Cisco::ISE::Endpoint::actions{"create"}; 
+      $accepttype = "endpoint";
     }
     $data .= $record->toXML;
   }  
   
   $data = $first->header($data);
   $hostname = $hostname . $action;
-  my $useragent = LWP::InternalUserAgent->new (ssl_opts => $self->ssl_options);
+  my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
   my $request = HTTP::Request->new(POST => $hostname );
   $request->content_type("application/xml");  
-  $request->header("Authorization" => "Basic $credentials");
+  $request->header("Authorization" => "Basic $credentials",  Accept => "application/vnd.com.cisco.ise.identity.$accepttype.1.0+xml");
   $request->content($data);
   my $result = $useragent->request($request);
   my $result_ref = $self->parse_xml("result", $result->content);
@@ -331,40 +338,46 @@ sub update
   if ($self->ssl)
   { $hostname = "https://$hostname"; } else
   { $hostname = "http://$hostname"; }
-  $hostname = ":".$self->port if $self->port;
+  $hostname .= ":".$self->port if $self->port;
   my $action = "";
   my $data = "";
+  my $accepttype = "";
   my $first = $entries[0];
   while(@entries)
   { my $record = shift @entries; 
     if (ref($record) eq "Net::Cisco::ISE::InternalUser")
     { $action = $Net::Cisco::ISE::InternalUser::actions{"update"}; 
+      $accepttype = "internaluser";
     }
 
     if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
     { $action = $Net::Cisco::ISE::IdentityGroup::actions{"update"}; 
+      $accepttype = "identitygroup";
     }
 
     if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
     { $action = $Net::Cisco::ISE::NetworkDevice::actions{"update"}; 
+      $accepttype = "networkdevice";
     }
   
     if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
     { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"update"}; 
+      $accepttype = "networkdevicegroup";
     }
 
     if (ref($record) eq "Net::Cisco::ISE::Endpoint")
     { $action = $Net::Cisco::ISE::Endpoint::actions{"update"}; 
+      $accepttype = "endpoint";
     }
     $data .= $record->toXML;
   }  
 
   $data = $first->header($data);  
   $hostname = $hostname . $action;
-  my $useragent = LWP::InternalUserAgent->new (ssl_opts => $self->ssl_options);
+  my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
   my $request = HTTP::Request->new(PUT => $hostname );
   $request->content_type("application/xml");  
-  $request->header("Authorization" => "Basic $credentials");
+  $request->header("Authorization" => "Basic $credentials", Accept => "application/vnd.com.cisco.ise.identity.$accepttype.1.0+xml");
   $request->content($data);
   my $result = $useragent->request($request);
   my $result_ref = undef;
@@ -386,42 +399,48 @@ sub delete
   if ($self->ssl)
   { $hostname = "https://$hostname"; } else
   { $hostname = "http://$hostname"; }
-  $hostname = ":".$self->port if $self->port;
+  $hostname .= ":".$self->port if $self->port;
   my $action = "";
   my $type = "";
+  my $accepttype = "";
   
   if (ref($record) eq "ARRAY") { $record = $record->[0]; }
   if (ref($record) eq "Net::Cisco::ISE::InternalUser")
   { $action = $Net::Cisco::ISE::InternalUser::actions{"getById"}; 
     $type = "InternalUser";
+    $accepttype = "internaluser";
   }
 
   if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
   { $action = $Net::Cisco::ISE::IdentityGroup::actions{"getById"}; 
     $type = "IdentityGroup";
+    $accepttype = "identitygroup";
   }
   
   if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
   { $action = $Net::Cisco::ISE::NetworkDevice::actions{"getById"}; 
     $type = "NetworkDevice";
+    $accepttype = "networkdevice";
   }
   
   if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
   { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"getById"}; 
     $type = "NetworkDeviceGroup";
+    $accepttype = "networkdevicegroup";
   }
 
   if (ref($record) eq "Net::Cisco::ISE::Endpoint")
   { $action = $Net::Cisco::ISE::Endpoint::actions{"getById"}; 
     $type = "Endpoint";
+    $accepttype = "endpoint";
   }
   
   my $data = $record->header($record->toXML);
   $hostname = $hostname . $action.$record->id;
-  my $useragent = LWP::InternalUserAgent->new (ssl_opts => $self->ssl_options);
+  my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
   my $request = HTTP::Request->new(DELETE => $hostname );
   $request->content_type("application/xml");  
-  $request->header("Authorization" => "Basic $credentials");
+  $request->header("Authorization" => "Basic $credentials", Accept => "application/vnd.com.cisco.ise.identity.$accepttype.1.0+xml");
   $request->content($data);
   my $result = $useragent->request($request);
   my $result_ref = undef;
@@ -440,7 +459,8 @@ sub parse_xml
   my $xmlsimple = XML::Simple->new();
   my $xmlout = $xmlsimple->XMLin($xml_ref);
   if ($type eq "InternalUsers")
-  { my $users_ref = $xmlout->{"InternalUser"};
+  { #my $users_ref = $xmlout->{"InternalUser"};
+    my $users_ref = $xmlout->{"resources"}{"resource"};
     my %users = ();
     for my $key (keys % {$users_ref})
     { my $user = Net::Cisco::ISE::InternalUser->new( name => $key, %{ $users_ref->{$key} } );
@@ -508,7 +528,7 @@ sub parse_xml
   }
   
   if ($type eq "Endpoints")
-  { my $host_ref = $xmlout->{"Host"};
+  { my $host_ref = $xmlout->{"resources"}{"resource"};
     my %hosts = ();
 	for my $key (keys % {$host_ref})
     { my $host = Net::Cisco::ISE::Endpoint->new( macAddress => $key, %{ $host_ref->{$key} } );
@@ -848,7 +868,7 @@ SSL enabled (1 - default) or disabled (0).
 
 =item ssl_options
 
-Value is passed directly to LWP::InternalUserAGent as ssl_opt. Default value (hash-ref) is
+Value is passed directly to LWP::UserAGent as ssl_opt. Default value (hash-ref) is
 
 	{ 'SSL_verify_mode' => SSL_VERIFY_NONE, 'verify_hostname' => '0' }
 
@@ -1137,7 +1157,7 @@ You will also need
 
 =item L<IO::Socket::SSL>
 
-=item L<LWP::InternalUserAgent>
+=item L<LWP::UserAgent>
 
 =item L<XML::Simple>
 

@@ -1,5 +1,5 @@
 ---
-abstract: 'Access Cisco ACS functionality through REST API'
+abstract: 'Access Cisco ISE functionality through REST API'
 author:
   - hendrik.vanbelleghem@gmail.com
 build_requires: {}
@@ -9,26 +9,26 @@ license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
-name: Net-Cisco-ACS
+name: Net-Cisco-ISE
 provides:
-  Net::Cisco::ACS:
-    file: lib/Net/Cisco/ACS.pm
-    version: '0.03'
-  Net::Cisco::ACS::Device:
-    file: lib/Net/Cisco/ACS/Device.pm
-    version: '0.03'
-  Net::Cisco::ACS::DeviceGroup:
-    file: lib/Net/Cisco/ACS/DeviceGroup.pm
-    version: '0.03'
-  Net::Cisco::ACS::Host:
-    file: lib/Net/Cisco/ACS/Host.pm
-    version: '0.03'
-  Net::Cisco::ACS::IdentityGroup:
-    file: lib/Net/Cisco/ACS/IdentityGroup.pm
-    version: '0.03'
-  Net::Cisco::ACS::User:
-    file: lib/Net/Cisco/ACS/User.pm
-    version: '0.03'
+  Net::Cisco::ISE:
+    file: lib/Net/Cisco/ISE.pm
+    version: '0.01'
+  Net::Cisco::ISE::Endpoint:
+    file: lib/Net/Cisco/ISE/Endpoint.pm
+    version: '0.01'
+  Net::Cisco::ISE::IdentityGroup:
+    file: lib/Net/Cisco/ISE/IdentityGroup.pm
+    version: '0.01'
+  Net::Cisco::ISE::InternalUser:
+    file: lib/Net/Cisco/ISE/InternalUser.pm
+    version: '0.01'
+  Net::Cisco::ISE::NetworkDevice:
+    file: lib/Net/Cisco/ISE/NetworkDevice.pm
+    version: '0.01'
+  Net::Cisco::ISE::NetworkDeviceGroup:
+    file: lib/Net/Cisco/ISE/NetworkDeviceGroup.pm
+    version: '0.01'
 requires:
   IO::Socket::SSL: '2.0'
   LWP::UserAgent: '6.15'
@@ -39,5 +39,5 @@ requires:
   XML::Simple: '2.0'
 resources:
   license: http://www.gnu.org/licenses/old-licenses/gpl-1.0.txt
-version: '0.03'
+version: '0.01'
 x_serialization_backend: 'CPAN::Meta::YAML version 0.012'

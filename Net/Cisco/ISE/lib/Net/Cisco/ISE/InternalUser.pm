@@ -13,24 +13,34 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/internaluser/",
-					"create" => "/ers/config/internaluser/",
+        			"create" => "/ers/config/internaluser/",
                		"update" => "/ers/config/internaluser/",
                 	"getById" => "/ers/config/internaluser/",
            ); 
 
 # MOOSE!
 		   
-has 'description' => (
+has 'email' => (
       is  => 'rw',
       isa => 'Any',
   );
+
+has 'firstName' => (
+	is => 'rw',
+	isa => 'Str',
+);
+
+has 'lastName' => (
+	is => 'rw',
+	isa => 'Str',
+);
 
 has 'id' => (
       is  => 'rw',
       isa => 'Str',
   );
 
-has 'identityGroupName' => ( 
+has 'identityGroups' => ( 
 	is => 'rw',
 	isa => 'Str',
 	);
@@ -40,31 +50,26 @@ has 'name' => (
 	isa => 'Str',
 	);
 
-has 'dateExceeds' => ( 
-	is => 'rw',
-	isa => 'Str',
-	);
-
 has 'changePassword' => ( 
 	is => 'ro',
 	isa => 'Str',
 	);
 
-has 'created' => ( 
-	is => 'ro',
-	isa => 'Str',
-	);
+#has 'customAttributes' => ( 
+#	is => 'ro',
+#	isa => 'ArrayRef',
+#	auto_deref => '1',
+#	);		
 
-has 'attributeInfo' => ( 
-	is => 'ro',
-	isa => 'ArrayRef',
-	auto_deref => '1',
-	);		
-
-has 'dateExceedsEnabled' => (
+has 'expiryDateEnabled' => (
 	is => 'rw',
 	isa => 'Str',
 	);
+
+has 'expiryDate' => (
+	is => 'rw',
+	isa => 'Str',
+);
 
 has 'enablePassword' => (
 	is => 'rw',
@@ -76,37 +81,12 @@ has 'enabled' => (
 	isa => 'Str',
 	);
 
-has 'lastLogin' => (
-	is => 'ro',
-	isa => 'Any',
-	);
-
-has 'lastModified' => (
-	is => 'ro',
-	isa => 'Str',
-	);
-
-has 'lastPasswordChange' => ( 
-	is => 'ro',
-	isa => 'Str',
-	);
-
-has 'loginFailuresCounter' => (
-	is => 'ro',
-	isa => 'Int',
-	);
-
 has 'password' => (
 	is => 'rw',
 	isa => 'Str',
 	);
 
-has 'passwordNeverExpires' => (
-	is => 'rw',
-	isa => 'Str',
-	);
-
-has 'passwordType' => (
+has 'passwordIDStore' => (
 	is => 'rw',
 	isa => 'Str',
 	);
@@ -116,32 +96,34 @@ has 'passwordType' => (
 sub toXML
 { my $self = shift;
   my $id = $self->id;
-  my $description = $self->description || ""; 
-  my $identitygroupname = $self->identityGroupName || "All Groups";
+  my $identitygroups = $self->identityGroups || "";
   my $name = $self->name || "";
   my $changepassword = $self->changePassword || "false";
   my $enabled = $self->enabled || "true";
   my $password = $self->password || "";
-  my $passwordneverexpires = $self->passwordNeverExpires || "false";
-  my $passwordtype = $self->passwordType || "Internal Users";
+  my $passwordidstore = $self->passwordIDStore || "Internal Users";
   my $enablepassword = $self->enablePassword || "";
-  my $dateexceeds = $self->dateExceeds || "";
-  my $dateexceedsenabled = $self->dateExceedsEnabled || "false";
+  my $expirydate = $self->expirydate || "";
+  my $expirydateenabled = $self->expiryDateEnabled || "false";
+  my $lastname = $self->lastName || "";
+  my $firstname = $self->firstName || "";
+  my $email = $self->email || "";
   my $result = "";
   
   if ($id) { $result = "   <id>$id</id>\n"; }
   $result .= <<XML;
-   <description>$description</description>
-   <identityGroupName>$identitygroupname</identityGroupName>
-   <name>$name</name>
-   <changePassword>$changepassword</changePassword>
-   <enablePassword>$enablepassword</enablePassword>
-   <enabled>$enabled</enabled>
-   <password>$password</password>
-   <passwordNeverExpires>$passwordneverexpires</passwordNeverExpires>
-   <passwordType>$passwordtype</passwordType>
-   <dateExceeds>$dateexceeds</dateExceeds>
-   <dateExceedsEnabled>$dateexceedsenabled</dateExceedsEnabled>
+  <changePassword>$changepassword</changePassword>
+  <customAttributes/>
+  <email>$email</email>
+  <enabled>$enabled</enabled>
+  <firstName>$firstname</firstName>
+  <identityGroups>$identitygroups</identityGroups>
+  <lastName>$lastname</lastName>
+  <password>$password</password> 
+  <expiryDateEnabled>$expirydateenabled</expiryDateEnabled>
+  <expiryDate>$expirydate</expiryDate>
+  <name>$name</name>
+  <passwordIDStore>$passwordidstore</passwordIDStore>
 XML
 
 return $result;
@@ -150,7 +132,8 @@ return $result;
 sub header
 { my $self = shift;
   my $internalusers = shift;
-  return qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns2:user xmlns:ns2="identity.rest.mgmt.ise.nm.cisco.com">$internalusers</ns2:user>};
+  return qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns3:internaluser description="description" name="name" id="id" xmlns:ns2="ers.ise.cisco.com" xmlns:ns3="identity.ers.ise.cisco.com">$internalusers</ns2:internaluser>};
+
 }
 	
 =head1 NAME

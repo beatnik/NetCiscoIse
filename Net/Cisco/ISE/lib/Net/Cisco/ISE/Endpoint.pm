@@ -14,51 +14,61 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/endpoint/",
-					"create" => "/ers/config/endpoint/",
+			"create" => "/ers/config/endpoint/",
                		"update" => "/ers/config/endpoint/",
                 	"getById" => "/ers/config/endpoint/",
            ); 
 
 # MOOSE!		   
 	   
-has 'description' => (
+has 'id' => (
       is  => 'rw',
       isa => 'Any',
   );
 
-has 'id' => (
+has 'identityStore' => (
       is  => 'rw',
-      isa => 'Str',
-  );
-
-has 'identityGroupName' => (
-      is  => 'rw',
-      isa => 'Str',
+      isa => 'Any',
   );
   
-has 'created' => (
-      is  => 'rw',
-      isa => 'Str',
-  );
+has 'identityStoreId' => (
+	is => 'rw',
+	isa => 'Any',
+);
 
-has 'enabled' => (
-      is  => 'rw',
-      isa => 'Str',
-  );
-  
-has 'lastEnabled' => (
-      is  => 'rw',
-      isa => 'Str',
-  );
+has 'customAttributes' => (
+	is => 'rw',
+	isa => 'Any',
+);
 
-has 'lastModified' => (
-      is  => 'rw',
-      isa => 'Str',
-  );
+has 'groupId' => (
+	is => 'rw',
+	isa => 'Any',
+);
 
-has 'macAddress' => ( # Not sure if query for Endpoint can be done on MAC Address or on 'name' getByName vs getByMacAddress??!?
+has 'portalUser' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'profileId' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'staticGroupAssignment' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'staticProfileAssignment' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'macAddress' => ( 
       is  => 'rw',
-      isa => 'Str',
+      isa => 'Any',
   );
   
 # No Moose	
