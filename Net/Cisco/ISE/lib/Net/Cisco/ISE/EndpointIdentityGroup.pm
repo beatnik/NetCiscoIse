@@ -1,4 +1,4 @@
-package Net::Cisco::ISE::IdentityGroup;
+package Net::Cisco::ISE::EndpointIdentityGroup;
 use strict;
 use Moose;
 
@@ -12,10 +12,10 @@ BEGIN {
     %EXPORT_TAGS = ();
 };
 
-    %actions = (	"query" => "/ers/config/identitygroup/",
-			"create" => "/ers/config/identitygroup/",
-               		"update" => "/ers/config/identitygroup/",
-                	"getById" => "/ers/config/identitygroup/",
+    %actions = (	"query" => "/ers/config/endpointgroup/",
+			"create" => "/ers/config/endpointgroup/",
+               		"update" => "/ers/config/endpointgroup/",
+                	"getById" => "/ers/config/endpointgroup/",
            ); 
 
 # MOOSE!

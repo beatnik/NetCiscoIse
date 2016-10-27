@@ -3,6 +3,17 @@ use strict;
 use Moose;
 use Data::Dumper;
 
+=pod
+<authenticationSettings>
+<enableKeyWrap>false</enableKeyWrap>
+</authenticationSettings>
+<coaPort>0</coaPort>
+<NetworkDeviceIPList><NetworkDeviceIP><ipaddress>10.0.0.1</ipaddress><mask>32</mask></NetworkDeviceIP></NetworkDeviceIPList>
+<NetworkDeviceGroupList><NetworkDeviceGroup>Location#All Locations#Sitename</NetworkDeviceGroup></NetworkDeviceGroupList>
+<profileName>Cisco</profileName>
+<snmpsettings><linkTrapQuery>true</linkTrapQuery><macTrapQuery>true</macTrapQuery><originatingPolicyServicesNode>Auto</originatingPolicyServicesNode><pollingInterval>28800</pollingInterval><roCommunity>public</roCommunity><version>TWO_C</version></snmpsettings
+=cut
+
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %actions);

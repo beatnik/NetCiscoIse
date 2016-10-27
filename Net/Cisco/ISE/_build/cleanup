@@ -1,0 +1,5 @@
+do{ my $x = {
+       'Net-Cisco-ISE-0.01' => 1,
+       'blib' => 1
+     };
+$x; }

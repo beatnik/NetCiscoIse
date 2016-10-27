@@ -1,0 +1,16 @@
+do{ my $x = {
+       'build_requires' => {},
+       'conflicts' => {},
+       'recommends' => {},
+       'requires' => {
+                       'IO::Socket::SSL' => ' >= 2.0',
+                       'LWP::UserAgent' => '6.15',
+                       'MIME::Base64' => '3.15',
+                       'Module::Build' => '0.42',
+                       'Moose' => '>= 2.0',
+                       'URI' => '1.71',
+                       'XML::Simple' => '>= 2.0'
+                     },
+       'test_requires' => {}
+     };
+$x; }

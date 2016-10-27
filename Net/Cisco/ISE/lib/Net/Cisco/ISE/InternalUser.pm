@@ -13,7 +13,7 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/internaluser/",
-        			"create" => "/ers/config/internaluser/",
+			"create" => "/ers/config/internaluser/",
                		"update" => "/ers/config/internaluser/",
                 	"getById" => "/ers/config/internaluser/",
            ); 
