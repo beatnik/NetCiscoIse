@@ -103,7 +103,7 @@ sub toXML
   my $password = $self->password || "";
   my $passwordidstore = $self->passwordIDStore || "Internal Users";
   my $enablepassword = $self->enablePassword || "";
-  my $expirydate = $self->expirydate || "";
+  my $expirydate = $self->expiryDate || "";
   my $expirydateenabled = $self->expiryDateEnabled || "false";
   my $lastname = $self->lastName || "";
   my $firstname = $self->firstName || "";
