@@ -26,7 +26,7 @@ use Net::Cisco::ISE::Profile;
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $ERROR %actions);
-    $VERSION     = '0.01';
+    $VERSION     = '0.03';
     @ISA         = qw(Exporter);
     @EXPORT      = qw();
     @EXPORT_OK   = qw();
@@ -376,14 +376,13 @@ sub query
   my $result = $useragent->request($request);
   if ($result->code eq "400") { $ERROR = "Bad Request - HTTP Status: 400"; }
   if ($result->code eq "410") { $ERROR = "Unknown $type queried by name or ID - HTTP Status: 410"; }  
-  warn $result->content;
   $self->parse_xml($mode, $result->content);
 }
 
 sub create 
 { my $self = shift;
-  my @entries = @_;
-  return unless @entries;
+  my $record = shift;
+  return unless $record;
   my $hostname = $self->hostname;
   my $credentials = encode_base64($self->username.":".$self->password);
   if ($self->ssl)
@@ -393,73 +392,72 @@ sub create
   my $action = "";
   my $data = "";
   my $accepttype = "";
-  my $first = $entries[0];
-  while(@entries)
-  { my $record = shift @entries; 
-    if (ref($record) eq "Net::Cisco::ISE::InternalUser")
-    { $action = $Net::Cisco::ISE::InternalUser::actions{"create"}; 
-      $accepttype = "identity.internaluser.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::InternalUser")
+  { $action = $Net::Cisco::ISE::InternalUser::actions{"create"}; 
+    $accepttype = "identity.internaluser.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
-    { $action = $Net::Cisco::ISE::IdentityGroup::actions{"create"}; 
-      $accepttype = "identity.identitygroup.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
+  { #$action = $Net::Cisco::ISE::IdentityGroup::actions{"create"}; 
+    #$accepttype = "identity.identitygroup.1.0";
+    # ISE does not support creating Identity Groups through the API. No idea why this is!
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
-    { $action = $Net::Cisco::ISE::NetworkDevice::actions{"create"}; 
-      $accepttype = "network.networkdevice.1.1";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
+  { $action = $Net::Cisco::ISE::NetworkDevice::actions{"create"}; 
+    $accepttype = "network.networkdevice.1.1";
+  }
   
-    if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
-    { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"create"}; 
-      $accepttype = "network.networkdevicegroup.1.1";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
+  { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"create"}; 
+    $accepttype = "network.networkdevicegroup.1.1";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::Endpoint")
-    { $action = $Net::Cisco::ISE::Endpoint::actions{"create"}; 
-      $accepttype = "identity.endpoint.1.0";
-    }
-    if (ref($record) eq "Net::Cisco::ISE::EndpointCertificate")
-    { $action = $Net::Cisco::ISE::EndpointCertificate::actions{"create"};
-      $accepttype = "ca.endpointcert.1.0";
-    }
-    if (ref($record) eq "Net::Cisco::ISE::EndpointIdentityGroup")
-    { $action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"create"};
-      $accepttype = "identity.endpointgroup.1.0";
-    }
-    if (ref($record) eq "Net::Cisco::ISE::Portal")
-    { $action = $Net::Cisco::ISE::Portal::actions{"create"};
-      $accepttype = "identity.portal.1.0";
-    }
-    if (ref($record) eq "Net::Cisco::ISE::Profile")
-    { $action = $Net::Cisco::ISE::Profile::actions{"create"};
-      $accepttype = "identity.profilerprofile.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::Endpoint")
+  { $action = $Net::Cisco::ISE::Endpoint::actions{"create"}; 
+    $accepttype = "identity.endpoint.1.0";
+  }
+  if (ref($record) eq "Net::Cisco::ISE::EndpointCertificate")
+  { $action = $Net::Cisco::ISE::EndpointCertificate::actions{"create"};
+    $accepttype = "ca.endpointcert.1.0";
+  }
+  if (ref($record) eq "Net::Cisco::ISE::EndpointIdentityGroup")
+  { $action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"create"};
+    $accepttype = "identity.endpointgroup.1.0";
+  }
+  if (ref($record) eq "Net::Cisco::ISE::Portal")
+  { $action = $Net::Cisco::ISE::Portal::actions{"create"};
+    $accepttype = "identity.portal.1.0";
+  }
+  if (ref($record) eq "Net::Cisco::ISE::Profile")
+  { $action = $Net::Cisco::ISE::Profile::actions{"create"};
+    $accepttype = "identity.profilerprofile.1.0";
+  }
 
-    $data .= $record->toXML;
-  }  
-  
-  $data = $first->header($data);
+  $data .= $record->toXML;
+  $data = $record->header($data,$record);
   $hostname = $hostname . $action;
   my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
   my $request = HTTP::Request->new(POST => $hostname );
   $request->content_type("application/xml");  
-  $request->header("Authorization" => "Basic $credentials",  Accept => "application/vnd.com.cisco.ise.$accepttype+xml");
+  $request->header("Authorization" => "Basic $credentials",  "Content-Type" => "application/vnd.com.cisco.ise.$accepttype+xml");
   $request->content($data);
   my $result = $useragent->request($request);
-  my $result_ref = $self->parse_xml("result", $result->content);
   my $id = "";
-  if ($result->code ne "200") 
-  { $ERROR = $result_ref->{"errorCode"}." ".$result_ref->{"moreErrInfo"}." - HTTP Status: ".$result_ref->{"httpCode"};
+  if ($result->code ne "201") 
+  { my $result_ref = $self->parse_xml("messages", $result->content); 
+    $ERROR = $result_ref->{"messages"}{"message"}{"type"}.":".$result_ref->{"messages"}{"message"}{"code"}." - ".$result_ref->{"messages"}{"message"}{"title"}." "." - HTTP Status: ".$result->code;
   } else 
-  { $id = $result_ref->{"newBornId"}; }
+  { my $location = $result->header("location"); 
+    ($id) = $location =~ /^.*\/([^\/]*)$/;
+  }
   return $id;
 }
 
 sub update 
 { my $self = shift;
-  my @entries = @_;
+  my $record = shift;
+  return unless $record;
   my $hostname = $self->hostname;
   my $credentials = encode_base64($self->username.":".$self->password);
   if ($self->ssl)
@@ -469,73 +467,69 @@ sub update
   my $action = "";
   my $data = "";
   my $accepttype = "";
-  my $first = $entries[0];
-  while(@entries)
-  { my $record = shift @entries; 
-    if (ref($record) eq "Net::Cisco::ISE::InternalUser")
-    { $action = $Net::Cisco::ISE::InternalUser::actions{"update"}; 
-      $accepttype = "identity.internaluser.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::InternalUser")
+  { $action = $Net::Cisco::ISE::InternalUser::actions{"update"}; 
+    $accepttype = "identity.internaluser.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
-    { $action = $Net::Cisco::ISE::IdentityGroup::actions{"update"}; 
-      $accepttype = "identity.identitygroup.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
+  { $action = $Net::Cisco::ISE::IdentityGroup::actions{"update"}; 
+    $accepttype = "identity.identitygroup.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
-    { $action = $Net::Cisco::ISE::NetworkDevice::actions{"update"}; 
-      $accepttype = "network.networkdevice.1.1";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
+  { $action = $Net::Cisco::ISE::NetworkDevice::actions{"update"}; 
+    $accepttype = "network.networkdevice.1.1";
+  }
   
-    if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
-    { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"update"}; 
-      $accepttype = "network.networkdevicegroup.1.1";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
+  { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"update"}; 
+    $accepttype = "network.networkdevicegroup.1.1";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::Endpoint")
-    { $action = $Net::Cisco::ISE::Endpoint::actions{"update"}; 
-      $accepttype = "identity.endpoint.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::Endpoint")
+  { $action = $Net::Cisco::ISE::Endpoint::actions{"update"}; 
+    $accepttype = "identity.endpoint.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::EndpointCertificate")
-    { $action = $Net::Cisco::ISE::EndpointCertificate::actions{"update"};
-      $accepttype = "ca.endpointcert.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::EndpointCertificate")
+  { $action = $Net::Cisco::ISE::EndpointCertificate::actions{"update"};
+    $accepttype = "ca.endpointcert.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::EndpointIdentityGroup")
-    { $action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"update"};
-      $accepttype = "identity.endpointgroup.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::EndpointIdentityGroup")
+  { $action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"update"};
+    $accepttype = "identity.endpointgroup.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::Portal")
-    { $action = $Net::Cisco::ISE::Portal::actions{"update"};
-      $accepttype = "identity.portal.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::Portal")
+  { $action = $Net::Cisco::ISE::Portal::actions{"update"};
+    $accepttype = "identity.portal.1.0";
+  }
 
-    if (ref($record) eq "Net::Cisco::ISE::Profile")
-    { $action = $Net::Cisco::ISE::Profile::actions{"update"};
-      $accepttype = "identity.profilerprofile.1.0";
-    }
+  if (ref($record) eq "Net::Cisco::ISE::Profile")
+  { $action = $Net::Cisco::ISE::Profile::actions{"update"};
+    $accepttype = "identity.profilerprofile.1.0";
+  }
 
-    $data .= $record->toXML;
-  }  
+  $data .= $record->toXML;
 
-  $data = $first->header($data);  
-  $hostname = $hostname . $action;
+  $data = $record->header($data, $record);  
+  $hostname = $hostname . $action.$record->id;
   my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
   my $request = HTTP::Request->new(PUT => $hostname );
   $request->content_type("application/xml");  
-  $request->header("Authorization" => "Basic $credentials", Accept => "application/vnd.com.cisco.ise.$accepttype+xml");
+  $request->header("Authorization" => "Basic $credentials", "Content-Type" => "application/vnd.com.cisco.ise.$accepttype+xml");
   $request->content($data);
   my $result = $useragent->request($request);
-  my $result_ref = undef;
-  $result_ref = $self->parse_xml("result", $result->content) if $result_ref;
-  $result_ref = {} unless $result_ref;
   my $id = "";
-  if ($result->code ne "200" && $result_ref->{"errorCode"}) 
-  { $ERROR = $result_ref->{"errorCode"}." ".$result_ref->{"moreErrInfo"}." - HTTP Status: ".$result_ref->{"httpCode"};
-  } else 
-  { $id = $result_ref->{"newBornId"}; }
+  if ($result->code ne "200")
+  { my $result_ref = $self->parse_xml("messages", $result->content);
+    $ERROR = $result_ref->{"messages"}{"message"}{"type"}.":".$result_ref->{"messages"}{"message"}{"code"}." - ".$result_ref->{"messages"}{"message"}{"title"}." "." - HTTP Status: ".$result->code;
+  } else
+  { my $location = $result->header("location");
+    ($id) = $location =~ /^.*\/([^\/]*)$/;
+  }
   return $id;
 }
 
@@ -609,20 +603,15 @@ sub delete
   }
 
  
-  my $data = $record->header($record->toXML);
   $hostname = $hostname . $action.$record->id;
   my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
   my $request = HTTP::Request->new(DELETE => $hostname );
   $request->content_type("application/xml");  
   $request->header("Authorization" => "Basic $credentials", Accept => "application/vnd.com.cisco.ise.$accepttype+xml");
-  $request->content($data);
   my $result = $useragent->request($request);
-  my $result_ref = undef;
-  $result_ref = $self->parse_xml("result", $result->content) if $result_ref;
-  $result_ref = {} unless $result_ref;  
   my $id = "";
-  if ($result->code ne "200" && $result_ref->{"errorCode"}) 
-  { $ERROR = $result_ref->{"errorCode"}." ".$result_ref->{"moreErrInfo"}." - HTTP Status: ".$result_ref->{"httpCode"};
+  if ($result->code ne "204") 
+  { $ERROR = $result->{"code"};
   }
 }
 
@@ -669,13 +658,13 @@ sub parse_xml
   
   if ($type eq "NetworkDevices")
   { my $device_ref = $xmlout->{"resources"}{"resource"};
-    my %devices = ();
-	for my $key (keys % {$device_ref})
-    { my $device = Net::Cisco::ISE::NetworkDevice->new( name => $key, %{ $device_ref->{$key} } );
+    my %devices = (); 
+    for my $key (keys % {$device_ref})
+    { my $device = Net::Cisco::ISE::NetworkDevice->new( name => $key, id => $device_ref->{$key}{"id"} );
       $devices{$key} = $device;
     }
-	$self->{"NetworkDevices"} = \%devices;
-	return $self->{"NetworkDevices"};
+    $self->{"NetworkDevices"} = \%devices;
+    return $self->{"NetworkDevices"};
   }
   if ($type eq "NetworkDevice") # deviceByName and deviceById DO NOT return hash but a single instance of Net::Cisco::ISE::NetworkDevice
   { my %device_hash = %{ $xmlout };
@@ -787,6 +776,10 @@ sub parse_xml
   }
 
   if ($type eq "result")
+  { my %result_hash = %{ $xmlout };
+    return \%result_hash;
+  }
+  if ($type eq "messages")
   { my %result_hash = %{ $xmlout };
     return \%result_hash;
   }
