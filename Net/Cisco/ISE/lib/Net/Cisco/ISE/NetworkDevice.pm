@@ -7,7 +7,7 @@ use Data::Dumper;
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %actions);
-    $VERSION     = '0.01';
+    $VERSION     = '0.03';
     @ISA         = qw(Exporter);
     @EXPORT      = qw();
     @EXPORT_OK   = qw();

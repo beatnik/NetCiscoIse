@@ -1,10 +1,15 @@
 Revision history for Perl module Net::Cisco::ISE
 
-0.01 Mon Oct 24 01:00:00 2016
+0.01 Wed Nov 30 01:00:00 2016
     - original version; created by ExtUtils::ModuleMaker 0.55
-    - Added query function (REST) for User, Device and DeviceGroup
+    - Added query function (REST) for InternalUser and IdentityGroup
     - Added query function / ByName & ById
     - Added update function
     - Added delete function
     - Added documentation
 
+0.02 Wed Dec 7 21:02:00 2016
+    - Updated Test to fix dependency - SORRY .. That's all!
+
+0.03 Thu Mar 9 22:10:00 2017
+    - Added initial code for NetworkDevice
