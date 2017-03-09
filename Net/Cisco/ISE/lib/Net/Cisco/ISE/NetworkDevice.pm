@@ -3,16 +3,6 @@ use strict;
 use Moose;
 use Data::Dumper;
 
-=pod
-<authenticationSettings>
-<enableKeyWrap>false</enableKeyWrap>
-</authenticationSettings>
-<coaPort>0</coaPort>
-<NetworkDeviceIPList><NetworkDeviceIP><ipaddress>10.0.0.1</ipaddress><mask>32</mask></NetworkDeviceIP></NetworkDeviceIPList>
-<NetworkDeviceGroupList><NetworkDeviceGroup>Location#All Locations#Sitename</NetworkDeviceGroup></NetworkDeviceGroupList>
-<profileName>Cisco</profileName>
-<snmpsettings><linkTrapQuery>true</linkTrapQuery><macTrapQuery>true</macTrapQuery><originatingPolicyServicesNode>Auto</originatingPolicyServicesNode><pollingInterval>28800</pollingInterval><roCommunity>public</roCommunity><version>TWO_C</version></snmpsettings
-=cut
 
 BEGIN {
     use Exporter ();
@@ -25,133 +15,81 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/networkdevice/",
-					"create" => "/ers/config/networkdevice/",
+			"create" => "/ers/config/networkdevice/",
                		"update" => "/ers/config/networkdevice/",
                 	"getById" => "/ers/config/networkdevice/",
            ); 
 
 # MOOSE!		   
 
-has 'description' => (
-      is  => 'rw',
-      isa => 'Any',
-  );
-
 has 'id' => (
-      is  => 'rw',
-      isa => 'Str',
+     is  => 'rw',
+     isa => 'Str',
   );
 
 has 'name' => (
 	is => 'rw',
 	isa => 'Str',
 	);
-
-has 'tacacsConnection' => (
-	is => 'rw',
-	isa => 'HashRef',
-	trigger => \&parseTacacsConnection,
-	auto_deref => 1,
-	);
-
-sub parseTacacsConnection
-{ my $self = shift;
-  my $new_ref = shift;
-  $self->singleConnect($self->tacacsConnection->{"singleConnect"});
-  $self->tacacs_SharedSecret($self->tacacsConnection->{"sharedSecret"});
-  $self->legacyTACACS($self->tacacsConnection->{"legacyTACACS"});
-};
-
-has 'groupInfo' => ( 
-	isa => 'Any',
-	is => 'rw',
-	trigger => \&parseGroupInfo,
-	);
-
-sub parseGroupInfo # STILL TO DO: Implement non-default groups!
-{ my $self = shift;
-  my $new_ref = shift;
-  for my $entry (@{ $new_ref })
-  { if ($entry->{"groupType"} eq "Location")
-    { $self->location($entry->{"groupName"});
-    }
-    if ($entry->{"groupType"} eq "Device Type")
-    { $self->deviceType($entry->{"groupName"});
-    }
-  }
-}
-	
-has 'legacyTACACS' => (
+has 'description' => (
 	is => 'rw',
 	isa => 'Str',
-	);
+);
 
-has 'tacacs_SharedSecret' => (
-	is => 'rw',
-	isa => 'Str',
-	);
-
-has 'singleConnect' => (
-	is => 'rw',
-	isa => 'Str',
-	);
-
-has 'radius_SharedSecret' => (
-	is => 'rw',
-	isa => 'Str',
-	);
-
-has 'subnets' => (
+has 'authenticationSettings' => (
 	is => 'rw',
 	isa => 'Any',
-	trigger => \&parseSubnet, # trigger modifier is calling within constructor
-	);
+);
 
-sub parseSubnet
-{ my $self = shift;
-  my $new_ref = shift;
-  my @ips = ();
-  if (ref($new_ref) eq "HASH")
-  { push(@ips,{ netMask => $new_ref->{"netMask"}, ipAddress => $new_ref->{"ipAddress"} }); }
-  if (ref($new_ref) eq "ARRAY")
-  { for my $entry (@ { $new_ref })
-    { if (ref($entry) eq "HASH")
-	  { push(@ips,{ netMask => $entry->{"netMask"}, ipAddress => $entry->{"ipAddress"} }); } 
-	}
-  }
-  $self->ips([@ips]);
-}
-
-has 'ips' => (
-	is => 'rw',
-	isa => 'ArrayRef',
-	auto_deref => 1,
-	);
-	
-has 'location' => (
+has 'coaPort' => (
 	is => 'rw',
 	isa => 'Str',
-	);
+);
 
-has 'deviceType' => (
+has 'profileName' => (
 	is => 'rw',
 	isa => 'Str',
-	);
+);
 
-has 'displayedInHex' => (
+has 'NetworkDeviceIPList' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'NetworkDeviceGroupList' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'modelName' => (
 	is => 'rw',
 	isa => 'Str',
-	);
+);
 
-has 'keyWrap' => (
+has 'ProfileName' => (
 	is => 'rw',
 	isa => 'Str',
-	);
+);
 
-has 'portCOA' => (
+has 'softwareVersion' => (
 	is => 'rw',
 	isa => 'Str',
-	);
+); 
+
+has 'snmpsettings' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'tacacsSettings' => (
+	is => 'rw',
+	isa => 'Any',
+);
+
+has 'trustsecsettings' => (
+	is => 'rw',
+	isa => 'Any',
+);
 
 # No Moose	
 
@@ -159,73 +97,174 @@ sub toXML
 { my $self = shift;
   my $result = "";
   my $id = $self->id;
-  my $description = $self->description || "";
   my $name = $self->name || "";
-  my $location = $self->location || "All Locations";
-  my $devicetype = $self->deviceType || "All Device Types";
-
-  my $legacytacacs = $self->legacyTACACS || "false";
-  my $tacacs_sharedsecret = $self->tacacs_SharedSecret || "";  
-  my $singleconnect = $self->singleConnect || "false";
-
-  my $displayedinhex = $self->displayedInHex || "true";
-  my $keywrap = $self->keyWrap || "false";
-  my $portcoa = $self->portCOA || "1700";
-  my $radius_sharedsecret = $self->radius_SharedSecret || "";
-
-  $result = <<XML;
-	<description>$description</description>
-	<name>$name</name>
-	<groupInfo>
-	<groupName>$devicetype</groupName>
-	<groupType>Device Type</groupType>
-	</groupInfo>
-	<groupInfo>
-	<groupName>$location</groupName>
-	<groupType>Location</groupType>
-	</groupInfo>
+  my $description = $self->description || "";
+  if ($self->authenticationSettings)
+  { my $enablekeywrap = $self->authenticationSettings->{"enablekeywrap"} || "";
+    my $keyencryptionkey = $self->authenticationSettings->{"keyencryptionkey"} || "";
+    my $keyinputformat = $self->authenticationSettings->{"keyInputFormat"} || "";
+    my $messageauthenticatorcodekey = $self->authenticationSettings->{"messageAuthenticatorCodeKey"} || "";
+    my $networkprotocol = $self->authenticationSettings->{"networkProtocol"} || "";
+    my $radiussharedsecret = $self->authenticationSettings->{"radiusSharedSecret"} || "";
+    $result .= <<XML;
+<authenticationSettings>
+<enableKeyWrap>$enablekeywrap</enableKeyWrap>
+<keyEncryptionKey>$keyencryptionkey</keyEncryptionKey>
+<keyInputFormat>$keyinputformat</keyInputFormat>
+<messageAuthenticatorCodeKey>$messageauthenticatorcodekey</messageAuthenticatorCodeKey>
+<networkProtocol>$networkprotocol</networkProtocol>
+<radiusSharedSecret>$radiussharedsecret</radiusSharedSecret>
+</authenticationSettings>
 XML
 
-  if (ref($self->ips) eq "ARRAY")
-  { for my $ref ( @{ $self->ips } )
-    { my $netmask = $ref->{'netMask'};
-	  my $ipaddress = $ref->{'ipAddress'};
-	  $result .= <<XML;
-	<subnets><ipAddress>$ipaddress</ipAddress><netMask>$netmask</netMask></subnets>
+  } 
+  my $coaport = $self->coaPort || "";
+  $result .= "<coaPort>$coaport</coaPort>\n";
+  if ($self->NetworkDeviceIPList) 
+  { $result .= "<NetworkDeviceIPList>\n"; 
+    my @networkdeviceiplist = @{ $self->NetworkDeviceIPList->{"NetworkDeviceIP"} };
+    for my $networkdeviceiplist (@networkdeviceiplist)
+    { my $ipaddress = $networkdeviceiplist->{"ipaddress"} || "";
+      my $mask = $networkdeviceiplist->{"mask"} || "";
+      $result .= <<XML;
+<NetworkDeviceIP>
+<ipaddress>$ipaddress</ipaddress>
+<mask>$mask</mask>
+</NetworkDeviceIP>
 XML
-	}
+    }
+  $result .= "</NetworkDeviceIPList>\n"; 
+  }
+  
+  if ($self->NetworkDeviceGroupList) 
+  { $result .= "<NetworkDeviceGroupList>\n"; 
+    my @networkdevicegrouplist = @{ $self->NetworkDeviceGroupList->{"NetworkDeviceGroup"} };
+    for my $networkdevicegroup (@networkdevicegrouplist)
+    { my $name = $networkdevicegroup || "";
+      $result .= qq(<NetworkDeviceGroup>$name</NetworkDeviceGroup>\n);
+    }
+    $result .= "</NetworkDeviceGroupList>\n"; 
+  }
+  my $profilename = $self->profileName || "";
+  $result .= "<profileName>$profilename</profileName>";
+  if ($self->snmpsettings)
+  { $result .= "<snmpsettings>\n";
+    my $linktrapquery = $self->snmpsettings->{"linkTrapQuery"} || "";
+    my $mactrapquery = $self->snmpsettings->{"macTrapQuery"} || "";
+    my $originatingpolicyservicesnode = $self->snmpsettings->{"originatingPolicyServicesNode"} || "";
+    my $pollinginterval = $self->snmpsettings->{"pollingInterval"} || "";
+    my $rocommunity = $self->snmpsettings->{"roCommunity"} || "";
+    my $version = $self->snmpsettings->{"version"} || "";
+    my $authpassword = $self->snmpsettings->{"authPassword"} || "";
+    my $privacyprotocol = $self->snmpsettings->{"privacyProtocol"} || "";
+    my $securitylevel = $self->snmpsettings->{"securityLevel"} || ""; 
+    my $authprotocol = $self->snmpsettings->{"authProtocol"} || "";
+    my $username = $self->snmpsettings->{"userName"} || "";
+    my $privacypassword = $self->snmpsettings->{"privacyPassword"} || "";
+      $result .= <<XML;
+<snmpsettings>
+<linkTrapQuery>$linktrapquery</linkTrapQuery>
+<macTrapQuery>$mactrapquery</macTrapQuery>
+<originatingPolicyServicesNode>$originatingpolicyservicesnode</originatingPolicyServicesNode>
+<pollingInterval>$pollinginterval</pollingInterval>
+<roCommunity>$rocommunity</roCommunity>
+<version>$version</version>
+<authPassword>$authpassword</authPassword>
+<privacyProtocl>$privacyprotocol</privacyProtocol>
+<securityLevel>$securitylevel</securityLevel>
+<authProtocol>$authprotocol</authProtocol>
+<userName>$username</userName>
+<privacyPassword>$privacypassword</privacyPassword>
+</snmpsettings>
+XML
   }
 
-  if ($tacacs_sharedsecret) {
-  $result .= <<XML;
-	<tacacsConnection>
-	<legacyTACACS>$legacytacacs</legacyTACACS>
-	<sharedSecret>$tacacs_sharedsecret</sharedSecret>
-	<singleConnect>$singleconnect</singleConnect>
-	</tacacsConnection>
+ if ($self->tacacsSettings)
+ { my $connectmodeoptions = $self->tacacsSettings->{"connectModeOptions"} || "";
+   my $sharedsecret = $self->tacacsSettings->{"sharedSecret"} || "";
+   $result .= <<XML;
+<tacacsSettings>
+<connectModeOptions>$connectmodeoptions</connectModeOptions>
+<sharedSecret>$sharedsecret</sharedSecret>
+</tacacsSettings>
 XML
+
   }
 
-  if ($radius_sharedsecret)
-  { $result .= <<XML;
-	<radiusConnection>
-	<displayedInHex>$displayedinhex</displayedInHex>
-	<keyWrap>$keywrap</keyWrap>
-	<portCoA>$portcoa</portCoA>
-	<sharedSecret>$radius_sharedsecret</sharedSecret>
-	</radiusConnection>
-XML
+if ($self->trustsecsettings)
+{ $result .= qq(<trustsecsettings>);
+  if ($self->trustsecsettings->{"deviceAuthenticationSettings"})
+  { my $sgadeviceid = $self->trustsecsettings->{"deviceAuthenticationSettings"}{"sgaDeviceId"} || "";
+    my $sgadevicepassword = $self->trustsecsettings->{"deviceAuthenticationSettings"}{"sgaDevicePassword"} || "";
+    $result .= qq(<deviceAuthenticationSettings>\n);
+    $result .= qq(<sgaDeviceId>$sgadeviceid</sgaDeviceId>\n); 
+    $result .= qq(<sgaDevicePassword>$sgadevicepassword</sgaDevicePassword>\n);
+    $result .= qq(</deviceAuthenticationSettings>\n);
   }
+  if ($self->trustsecsettings->{"sgaNotificationAndUpdates"})
+  { my $sendconfigurationtodeviceusing = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"sendConfigurationToDeviceUsing"} || "";
+    my $downloadpeerauthorizationpolicyeveryxseconds = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"downlaodPeerAuthorizationPolicyEveryXSeconds"} || "";
+    $downloadpeerauthorizationpolicyeveryxseconds ||= $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"downloadPeerAuthorizationPolicyEveryXSeconds"} || ""; 
+    my $downloadsgaccllistseveryxseconds = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"downloadSGACLListsEveryXSeconds"} || "";
+    my $downloadenvironmentdataeveryxseconds = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"downlaodEnvironmentDataEveryXSeconds"} || "";
+    $downloadenvironmentdataeveryxseconds ||= $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"downloadEnvironmentDataEveryXSeconds"} || "";
+    my $reauthenticationeveryxseconds = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"reAuthenticationEveryXSeconds"} || "";
+    my $sendconfigurationtodevice = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"sendConfigurationToDevice"} || ""; 
+    my $othersgadevicestotrustthisdevice = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"otherSGADevicesToTrustThisDevice"} || "";
+
+    $result .= qq(<sgaNotificationAndUpdates>\n);
+    $result .= qq(<sendConfigurationToDeviceUsing>$sendconfigurationtodeviceusing</sendConfigurationToDeviceUsing>\n);
+    $result .= qq(<downlaodPeerAuthorizationPolicyEveryXSeconds>$downloadpeerauthorizationpolicyeveryxseconds</downlaodPeerAuthorizationPolicyEveryXSeconds>\n);
+    $result .= qq(<downlaodEnvironmentDataEveryXSeconds>$downloadenvironmentdataeveryxseconds</downlaodEnvironmentDataEveryXSeconds>\n);
+    $result .= qq(<reAuthenticationEveryXSeconds>$reauthenticationeveryxseconds</reAuthenticationEveryXSeconds>\n);
+    $result .= qq(<sendConfigurationToDevice>$sendconfigurationtodevice</sendConfigurationToDevice>\n);
+    $result .= qq(<otherSGADevicesToTrustThisDevice>$othersgadevicestotrustthisdevice</otherSGADevicesToTrustThisDevice>\n);
+    $result .= qq(<downloadSGACLListsEveryXSeconds>$downloadsgaccllistseveryxseconds</downloadSGACLListsEveryXSeconds>\n);
+    $result .= qq(</sgaNotificationAndUpdates>\n);
+  }
+  if ($self->trustsecsettings->{"deviceConfigurationDeployment"})
+  { my $includewhendeployingsgtupdates =  $self->trustsecsettings->{"deviceConfigurationDeployment"}{"includeWhenDeployingSGTUpdates"} || "";
+    my $execmodeusername = $self->trustsecsettings->{"deviceConfigurationDeployment"}{"execModeUsername"} || "";
+    my $enablemodepassword = $self->trustsecsettings->{"deviceConfigurationDeployment"}{"enableModePassword"} || "";
+    my $execmodepassword = $self->trustsecsettings->{"deviceConfigurationDeployment"}{"execModePassword"} || "";
+
+    $result .= qq(<deviceConfigurationDeployment>\n);
+    $result .= qq(<includeWhenDeployingSGTUpdates></includeWhenDeployingSGTUpdates>\n);
+    $result .= qq(<execModeUsername>$execmodeusername</execModeUsername>\n);
+    $result .= qq(<enableModePassword>$enablemodepassword</enableModePassword>\n);
+    $result .= qq(<execModePassword>$execmodepassword</execModePassword>\n);
+    $result .= qq(</deviceConfigurationDeployment>\n);
+  }
+
+  $result .= qq(</trustsecsettings>\n);
+}
+# Not documented by Cisco ISE API:
+# SNMP Settings: authPassword
+# SNMP Settings: privacyProtocol
+# SNMP Settings: securityLevel
+# SNMP Settings: authProtocol
+# SNMP Settings: userName
+# SNMP Settings: privacyPassword
+# TACACS Settings: previousSharedSecretExpiry - Probably not implemented for write operations
+# TACACS Settings: previousSharedSecret - Probably not implemented for write operations
 
   return $result;
 }
 
 sub header
 { my $self = shift;
-  my $devices = shift;
-  return qq(<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns1:device xmlns:ns1="networkdevice.rest.mgmt.acs.nm.cisco.com">$devices</ns1:device>);
+  my $data = shift;
+  my $record = shift;
+  my $name = $record->name || "";
+  my $id = $record->id || "";
+  my $description = $record->description || "";
+
+  return qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns4:networkdevice description="$description" name="$name" id="$id" xmlns:ers="ers.ise.cisco.com" xmslns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns4="network.ers.ise.cisco.com">$data</ns4:networkdevice>};
+
 }
-	
+
+=pod
+
 =head1 NAME
 
 Net::Cisco::ISE::Device - Access Cisco ISE functionality through REST API - Device fields
