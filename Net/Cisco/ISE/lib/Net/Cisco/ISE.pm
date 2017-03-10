@@ -33,10 +33,6 @@ BEGIN {
     %EXPORT_TAGS = ();
 	
 	$ERROR = ""; # TODO: Document error properly!
-	%actions = ( 	"version" => "/Rest/Common/AcsVersion",
-			"serviceLocation" => "/Rest/Common/ServiceLocation",
-			"errorMessage" => "/Rest/Common/ErrorMessage",
-				);
 }
 
 # Moose!
@@ -72,157 +68,148 @@ has 'mock' => (
 	);    
     
 sub internalusers # No Moose here :(
-{	my $self = shift;
-        $ERROR = "";
-	if (@_)
-	{ my %args = @_; 
-	  $self->{"InternalUsers"} = $args{"internalusers"};
-          if ($self->mock())
-          { return $self->{"InternalUsers"}; }      
-	  if ($args{"id"})
-	  { $self->{"InternalUsers"} = $self->query("InternalUser","id",$args{"id"}); }
-	} else
-	{ $self->{"InternalUsers"} = $self->query("InternalUser"); 
-	}
-	return $self->{"InternalUsers"};
-}	
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_; 
+    $self->{"InternalUsers"} = $args{"internalusers"};
+    if ($self->mock())
+    { return $self->{"InternalUsers"}; }      
+	if ($args{"id"})
+	{ $self->{"InternalUsers"} = $self->query("InternalUser","id",$args{"id"}); }
+  } else
+  { $self->{"InternalUsers"} = $self->query("InternalUser"); 
+  }
+  return $self->{"InternalUsers"};
+}
 
 sub identitygroups # No Moose here :(
-{	my $self = shift;
-    $ERROR = "";
-	if (@_)
-	{ my %args = @_; 
-	  $self->{"IdentityGroups"} = $args{"identitygroups"}; 
-      if ($self->mock())
-      { return $self->{"IdentityGroups"}; }
-
-	  if ($args{"id"})
-	  { $self->{"IdentityGroups"} = $self->query("IdentityGroup","id",$args{"id"}); }
-	} else
-	{ $self->{"IdentityGroups"} = $self->query("IdentityGroup"); 
-	}
-	return $self->{"IdentityGroups"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_; 
+    $self->{"IdentityGroups"} = $args{"identitygroups"}; 
+    if ($self->mock())
+    { return $self->{"IdentityGroups"}; }
+	if ($args{"id"})
+	{ $self->{"IdentityGroups"} = $self->query("IdentityGroup","id",$args{"id"}); }
+  } else
+  { $self->{"IdentityGroups"} = $self->query("IdentityGroup"); 
+  }
+  return $self->{"IdentityGroups"};
 }	
 
 sub endpointidentitygroups # No Moose here :(
-{       my $self = shift;
-    $ERROR = "";
-        if (@_)
-        { my %args = @_;
-          $self->{"EndpointIdentityGroups"} = $args{"endpointidentitygroups"};
-      if ($self->mock())
-      { return $self->{"EndpointIdentityGroups"}; }
-
-          if ($args{"id"})
-          { $self->{"EndpointIdentityGroups"} = $self->query("EndpointIdentityGroup","id",$args{"id"}); }
-        } else
-        { $self->{"EndpointIdentityGroups"} = $self->query("EndpointIdentityGroup");
-        }
-        return $self->{"EndpointIdentityGroups"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_;
+    $self->{"EndpointIdentityGroups"} = $args{"endpointidentitygroups"};
+    if ($self->mock())
+    { return $self->{"EndpointIdentityGroups"}; }
+    if ($args{"id"})
+    { $self->{"EndpointIdentityGroups"} = $self->query("EndpointIdentityGroup","id",$args{"id"}); }
+  } else
+  { $self->{"EndpointIdentityGroups"} = $self->query("EndpointIdentityGroup");
+  }
+  return $self->{"EndpointIdentityGroups"};
 }
 
 sub networkdevices # No Moose here :(
-{	my $self = shift;
-	$ERROR = "";
-	if (@_)
-	{ my %args = @_; 
-	  $self->{"NetworkDevices"} = $args{"networkdevices"};
-      if ($self->mock())
-      { return $self->{"NetworkDevices"}; }
-
-	  if ($args{"id"})
-	  { $self->{"NetworkDevices"} = $self->query("NetworkDevice","id",$args{"id"}); }
-	} else
-	{ $self->{"NetworkDevices"} = $self->query("NetworkDevice"); 
-	}
-	return $self->{"NetworkDevices"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_; 
+    $self->{"NetworkDevices"} = $args{"networkdevices"};
+    if ($self->mock())
+    { return $self->{"NetworkDevices"}; }
+    if ($args{"id"})
+	{ $self->{"NetworkDevices"} = $self->query("NetworkDevice","id",$args{"id"}); }
+  } else
+  { $self->{"NetworkDevices"} = $self->query("NetworkDevice"); 
+  }
+  return $self->{"NetworkDevices"};
 }	
 
 sub networkdevicegroups # No Moose here :(
-{	my $self = shift;
-	$ERROR = "";
-	if (@_)
-	{ my %args = @_; 
-	  $self->{"NetworkDeviceGroups"} = $args{"networkdevicegroups"};
-      if ($self->mock())
-      { return $self->{"NetworkDeviceGroups"}; }
-
-	  if ($args{"id"})
-	  { $self->{"NetworkDeviceGroups"} = $self->query("NetworkDeviceGroup","id",$args{"id"}); }
-	} else
-	{ $self->{"NetworkDeviceGroups"} = $self->query("NetworkDeviceGroup"); 
-	}
-	return $self->{"NetworkDeviceGroups"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_; 
+	$self->{"NetworkDeviceGroups"} = $args{"networkdevicegroups"};
+    if ($self->mock())
+    { return $self->{"NetworkDeviceGroups"}; }
+    if ($args{"id"})
+	{ $self->{"NetworkDeviceGroups"} = $self->query("NetworkDeviceGroup","id",$args{"id"}); }
+  } else
+  { $self->{"NetworkDeviceGroups"} = $self->query("NetworkDeviceGroup"); 
+  }
+  return $self->{"NetworkDeviceGroups"};
 }	
 
 sub endpoints # No Moose here :(
-{	my $self = shift;
-	$ERROR = "";
-	if (@_)
-	{ my %args = @_; 
-	  $self->{"Endpoints"} = $args{"endpoints"};
-      if ($self->mock())
-      { return $self->{"Endpoints"}; }
-
-	  if ($args{"id"})
-	  { $self->{"Endpoints"} = $self->query("Endpoint","id",$args{"id"}); }
-	} else
-	{ $self->{"Endpoints"} = $self->query("Endpoint"); 
-	}
-	return $self->{"Endpoints"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_; 
+	$self->{"Endpoints"} = $args{"endpoints"};
+    if ($self->mock())
+    { return $self->{"Endpoints"}; }
+    if ($args{"id"})
+	{ $self->{"Endpoints"} = $self->query("Endpoint","id",$args{"id"}); }
+  } else
+  { $self->{"Endpoints"} = $self->query("Endpoint"); 
+  }
+  return $self->{"Endpoints"};
 }	
 	
 sub endpointcertificates # No Moose here :(
-{       my $self = shift;
-        $ERROR = "";
-        if (@_)
-        { my %args = @_;
-          $self->{"EndpointCertificates"} = $args{"endpointcertificates"};
-      if ($self->mock())
-      { return $self->{"EndpointCertificates"}; }
-
-          if ($args{"id"})
-          { $self->{"EndpointCertificates"} = $self->query("EndpointCertificate","id",$args{"id"}); }
-        } else
-        { $self->{"EndpointCertificates"} = $self->query("EndpointCertificate");
-        }
-        return $self->{"EndpointCertificates"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_;
+    $self->{"EndpointCertificates"} = $args{"endpointcertificates"};
+    if ($self->mock())
+    { return $self->{"EndpointCertificates"}; }
+    if ($args{"id"})
+    { $self->{"EndpointCertificates"} = $self->query("EndpointCertificate","id",$args{"id"}); }
+  } else
+  { $self->{"EndpointCertificates"} = $self->query("EndpointCertificate");
+  }
+  return $self->{"EndpointCertificates"};
 }
 
 sub portals # No Moose here :(
-{       my $self = shift;
-        $ERROR = "";
-        if (@_)
-        { my %args = @_;
-          $self->{"Portals"} = $args{"portals"};
-      if ($self->mock())
-      { return $self->{"Portals"}; }
-
-          if ($args{"id"})
-          { $self->{"Portals"} = $self->query("Portal","id",$args{"id"}); }
-        } else
-        { $self->{"Portals"} = $self->query("Portal");
-        }
-        return $self->{"Portals"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_;
+    $self->{"Portals"} = $args{"portals"};
+    if ($self->mock())
+    { return $self->{"Portals"}; }
+    if ($args{"id"})
+    { $self->{"Portals"} = $self->query("Portal","id",$args{"id"}); }
+  } else
+  { $self->{"Portals"} = $self->query("Portal");
+  }
+  return $self->{"Portals"};
 }
 
 sub profiles # No Moose here :(
-{       my $self = shift;
-        $ERROR = "";
-        if (@_)
-        { my %args = @_;
-          $self->{"Profiles"} = $args{"profiles"};
-      if ($self->mock())
-      { return $self->{"Profiles"}; }
-
-          if ($args{"id"})
-          { $self->{"Profiles"} = $self->query("Profile","id",$args{"id"}); }
-        } else
-        { $self->{"Profiles"} = $self->query("Profile");
-        }
-        return $self->{"Profiles"};
+{ my $self = shift;
+  $ERROR = "";
+  if (@_)
+  { my %args = @_;
+    $self->{"Profiles"} = $args{"profiles"};
+    if ($self->mock())
+    { return $self->{"Profiles"}; }
+    if ($args{"id"})
+    { $self->{"Profiles"} = $self->query("Profile","id",$args{"id"}); }
+  } else
+  { $self->{"Profiles"} = $self->query("Profile");
+  }
+  return $self->{"Profiles"};
 }
-
 
 has 'username' => (
 	is => 'rw',
@@ -236,29 +223,6 @@ has 'password' => (
 	required => '1',
 	);
 
-sub version # No Moose here :(
-{	my $self = shift;
-    $ERROR = "";
-	unless ($self->{"Version"}) # Version is not going to magically change in one session
-	{ $self->{"Version"} = $self->query("Version"); }
-	return $self->{"Version"};
-}	
-	
-sub servicelocation # No Moose here :(
-{	my $self = shift;
-    $ERROR = "";
-	unless ($self->{"ServiceLocation"}) # serviceLocation is not going to magically change in one session
-	{ $self->{"ServiceLocation"} = $self->query("ServiceLocation"); }
-	return $self->{"ServiceLocation"};
-}	
-
-sub errormessage # No Moose here :(
-{	my $self = shift;
-    $ERROR = "";
-	$self->{"ErrorMessage"} = $self->query("ErrorMessage"); 
-	return $self->{"ErrorMessage"};
-}	
-	
 # Non-Moose
 
 sub query 
@@ -296,10 +260,10 @@ sub query
   { #$action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"query"};
     $mode = "EndpointIdentityGroups";
     $accepttype = "identity.endpointgroup.1.0";
-        if ($key eq "id")
-        { #$action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"getById"}.$value;
-          $mode = "EndpointIdentityGroup";
-        }
+    if ($key eq "id")
+    { #$action = $Net::Cisco::ISE::EndpointIdentityGroup::actions{"getById"}.$value;
+      $mode = "EndpointIdentityGroup";
+    }
   }
   if ($type eq "NetworkDevice")
   { $action = $Net::Cisco::ISE::NetworkDevice::actions{"query"}; 
@@ -332,42 +296,28 @@ sub query
   { #$action = $Net::Cisco::ISE::EndpointCertificate::actions{"query"};
     $mode = "EndpointCertificates";
     $accepttype = "ca.endpointcert.1.0";
-        if ($key eq "id")
-        { #$action = $Net::Cisco::ISE::EndpointCertificate::actions{"getById"}.$value;
-          $mode = "EndpointCertificate";
-        }
+    if ($key eq "id")
+    { #$action = $Net::Cisco::ISE::EndpointCertificate::actions{"getById"}.$value;
+      $mode = "EndpointCertificate";
+    }
   }
-
   if ($type eq "Portal")
   { #$action = $Net::Cisco::ISE::Portal::actions{"query"};
     $mode = "Portals";
     $accepttype = "identity.portal.1.0";
-        if ($key eq "id")
-        { #$action = $Net::Cisco::ISE::Portal::actions{"getById"}.$value;
-          $mode = "Portal";
-        }
+    if ($key eq "id")
+    { #$action = $Net::Cisco::ISE::Portal::actions{"getById"}.$value;
+      $mode = "Portal";
+    }
   }
   if ($type eq "Profile")
   { #$action = $Net::Cisco::ISE::Profile::actions{"query"};
     $mode = "Profiles";
     $accepttype = "identity.profilerprofile.1.0";
-        if ($key eq "id")
-        { #$action = $Net::Cisco::ISE::Profile::actions{"getById"}.$value;
-          $mode = "Profile";
-        }
-  }
-
-  if ($type eq "Version")
-  { $action = $Net::Cisco::ISE::actions{"version"}; 
-    $mode = "Version";
-  }
-  if ($type eq "ServiceLocation")
-  { $action = $Net::Cisco::ISE::actions{"serviceLocation"}; 
-    $mode = "ServiceLocation";
-  }
-  if ($type eq "ErrorMessage")
-  { $action = $Net::Cisco::ISE::actions{"errorMessage"}; 
-    $mode = "ErrorMessage";
+    if ($key eq "id")
+    { #$action = $Net::Cisco::ISE::Profile::actions{"getById"}.$value;
+      $mode = "Profile";
+    }
   }
 
   $hostname = $hostname . $action;
@@ -474,8 +424,9 @@ sub update
   }
 
   if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
-  { $action = $Net::Cisco::ISE::IdentityGroup::actions{"update"}; 
-    $accepttype = "identity.identitygroup.1.0";
+  { #$action = $Net::Cisco::ISE::IdentityGroup::actions{"update"}; 
+    #$accepttype = "identity.identitygroup.1.0";
+	# ISE does not support updating Identity Groups through the API. No idea why this is!
   }
 
   if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
@@ -555,9 +506,10 @@ sub delete
   }
 
   if (ref($record) eq "Net::Cisco::ISE::IdentityGroup")
-  { $action = $Net::Cisco::ISE::IdentityGroup::actions{"getById"}; 
-    $type = "IdentityGroup";
-    $accepttype = "identity.identitygroup.1.0";
+  { #$action = $Net::Cisco::ISE::IdentityGroup::actions{"getById"}; 
+    #$type = "IdentityGroup";
+    #$accepttype = "identity.identitygroup.1.0";
+	# ISE does not support deleting Identity Groups through the API. No idea why this is!
   }
 
   if (ref($record) eq "Net::Cisco::ISE::NetworkDevice")
@@ -602,7 +554,6 @@ sub delete
     $type = "Profile";
     $accepttype = "identity.profilerprofile.1.0";
   }
-
  
   $hostname = $hostname . $action.$record->id;
   my $useragent = LWP::UserAgent->new (ssl_opts => $self->ssl_options);
@@ -784,19 +735,6 @@ sub parse_xml
   { my %result_hash = %{ $xmlout };
     return \%result_hash;
   }
-  if ($type eq "Version")
-  { my %version_hash = %{ $xmlout };
-    return \%version_hash;
-  }
-  if ($type eq "ServiceLocation")
-  { my %servicelocation_hash = %{ $xmlout };
-    return \%servicelocation_hash;
-  }
-  if ($type eq "ErrorMessage")
-  { my %errormessage_hash = %{ $xmlout };
-    return \%errormessage_hash;
-  }
-
 }
 
 =head1 NAME
@@ -817,34 +755,47 @@ Net::Cisco::ISE - Access Cisco ISE functionality through REST API
 	my %users = $ise->internalusers;
 	# Retrieve all users from ISE
 	# Returns hash with username / Net::Cisco::ISE::InternalUser pairs
+	# This will ONLY return the user ID and name. More detailed information has to be queried using either values.
 	
 	print $ise->internalusers->{"admin"}->toXML;
 	# Dump in XML format (used by ISE for API calls)
+	# This will ONLY return the user ID and name. More detailed information has to be queried using either values.
 	
 	my $user = $ise->internalusers("name","admin");
-	# Faster call to request specific user information by name
+	# Faster call to request specific (full) user information by name
 
 	my $user = $ise->internalusers("id","b74a0ef2-b29c-40e3-a0d1-4c0dfb51ace9");
-	# Faster call to request specific user information by ID (assigned by ISE, present in Net::Cisco::ISE::InternalUser)
+	# Faster call to request specific (full) user information by ID (assigned by ISE, present in Net::Cisco::ISE::InternalUser)
 
 	my %identitygroups = $ise->identitygroups;
 	# Retrieve all identitygroups from ISE
 	# Returns hash with name / Net::Cisco::ISE::IdentityGroup pairs
+	# This will ONLY return the user ID and name. More detailed information has to be queried using either values.
 	
 	print $ise->identitygroups->{"All Groups"}->toXML;
 	# Dump in XML format (used by ISE for API calls)
+	# This will ONLY return the user ID and name. More detailed information has to be queried using either values.	
 	
 	my $identitygroup = $ise->identitygroups("name","All Groups");
-	# Faster call to request specific identity group information by name
+	# Faster call to request specific (full) identity group information by name
 
 	my $identitygroup = $ise->identitygroups("id","4fffc260-9b96-11e6-93fb-005056ad1454");
-	# Faster call to request specific identity group information by ID (assigned by ISE, present in Net::Cisco::ISE::IdentityGroup)
+	# Faster call to request specific (full) identity group information by ID (assigned by ISE, present in Net::Cisco::ISE::IdentityGroup)
 
-	my $device = $acs->networkdevices("name","MAIN_Router");
-	# Faster call to request specific device information by name
+	my %networkdevices = $ise->networkdevices;
+	# Retrieve all network devices from ISE
+	# Returns hash with name / Net::Cisco::ISE::NetworkDevice pairs
+	# This will ONLY return the network device ID and name. More detailed information has to be queried using either values.
+	
+	print $ise->networkdevices->{"Main_Router"}->toXML;
+	# Dump in XML format (used by ISE for API calls)
+	# This will ONLY return the network device ID and name. More detailed information has to be queried using either values.	
 
-	my $device = $acs->networkdevices("id","250");
-	# Faster call to request specific device information by ID (assigned by ISE, present in Net::Cisco::ISE::NetworkDevice)
+	my $device = $ise->networkdevices("name","MAIN_Router");
+	# Faster call to request (full) specific device information by name
+
+	my $device = $ise->networkdevices("id","b74a0ef2-b29c-afee-0001-4c013751ace9");
+	# Faster call to request specific (full) device information by ID (assigned by ISE, present in Net::Cisco::ISE::NetworkDevice)
 	
 	$user->id(0); # Required for new user!
 	my $id = $ise->create($user);
@@ -860,17 +811,7 @@ Net::Cisco::ISE - Access Cisco ISE functionality through REST API
 	# print "Record ID is $id" if $id;
 	# print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure    
-    
-	$identitygroup->id(0); # Required for new record!
-	my $id = $ise->create($identitygroup);
-	# Create new identity group based on Net::Cisco::ISE::IdentityGroup instance
-	# Return value is ID generated by ISE
-	print "Record ID is $id" if $id;
-	print $Net::Cisco::ISE::ERROR unless $id;
-	# $Net::Cisco::ISE::ERROR contains details about failure
 
-    # Cisco ISE does not support modifying an identity group through the API
-	
 	my $id = $ise->update($user);
 	# Update existing user based on Net::Cisco::ISE::InternalUser instance
 	# Return value is ID generated by ISE
@@ -887,6 +828,8 @@ Net::Cisco::ISE - Access Cisco ISE functionality through REST API
         
 	$ise->delete($user);
 	# Delete existing user based on Net::Cisco::ISE::InternalUser instance
+
+    # Cisco ISE does not support modifying an identity group through the API
 	
 =head1 DESCRIPTION
 
@@ -955,7 +898,7 @@ From the class instance, call the different methods for retrieving values.
 
 =item users
 
-Returns hash or single instance, depending on context.
+Returns hash or single instance, depending on context. The result will only contain the name and identifier. Use either values to perform a full-detail query.
 
 	my %users = $ise->internalusers(); # Slow
 	my $user = $ise->internalusers()->{"admin"};
@@ -974,7 +917,7 @@ The returned hash contains instances of L<Net::Cisco::ISE::InternalUser>, using 
 
 =item identitygroups
 
-Returns hash or single instance, depending on context.
+Returns hash or single instance, depending on context. The result will only contain the name and identifier. Use either values to perform a full-detail query.
 
 	my %identitygroups = $ise->identitygroups(); # Slow
 	my $identitygroup = $ise->identitygroups()->{"All Groups"};
@@ -991,38 +934,38 @@ The returned hash contains instances of L<Net::Cisco::ISE::IdentityGroup>, using
 
 	print $identitygroup->id;
 	
-=item devices
+=item networkdevices
 
-Returns hash or single instance, depending on context.
+Returns hash or single instance, depending on context. The result will only contain the name and identifier. Use either values to perform a full-detail query.
 
-	my %devices = $acs->networkdevices(); # Slow
-	my $device = $acs->networkdevices()->{"Main_Router"};
+	my %devices = $ise->networkdevices(); # Slow
+	my $device = $ise->networkdevices()->{"Main_Router"};
 	print $device->name;
 	
-The returned hash contains instances of L<Net::Cisco::ISE::NetworkDevice>, using name (typically the sysname) as the hash key. Using a call to C<device> with no arguments will retrieve all devices and can take quite a few seconds (depending on the size of your database). When you know the hostname or ID, use the L<devices> call with arguments as listed below.
+The returned hash contains instances of L<Net::Cisco::ISE::NetworkDevice>, using name (typically the sysname) as the hash key. Using a call to C<networkdevices> with no arguments will retrieve all devices and can take quite a few seconds (depending on the size of your database). When you know the hostname or ID, use the L<networkdevices> call with arguments as listed below.
 	
-	my $device = $acs->device("name","Main_Router"); # Faster
+	my $device = $ise->networkdevice("name","Main_Router"); # Faster
 	# or
-	my $device = $acs->device("id","123"); # Faster
+	my $device = $ise->networkdevice("id","b74a0ef2-b29c-afee-0001-4c013751ace9"); # Faster
 	print $device->name;
 
 	The ID is typically generated by Cisco ISE when the entry is created. It can be retrieved by calling the C<id> method on the object.
 
 	print $device->id;
 
-=item devicegroups
+=item networkdevicegroups
 
-Returns hash or single instance, depending on context.
+Returns hash or single instance, depending on context. The result will only contain the name and identifier. Use either values to perform a full-detail query.
 
-	my %devicegroups = $acs->networkdevicegroups(); # Slow
-	my $devicegroup = $acs->networkdevicegroups()->{"All Locations:Main Site"};
+	my %devicegroups = $ise->networkdevicegroups(); # Slow
+	my $devicegroup = $ise->networkdevicegroups()->{"All Locations:Main Site"};
 	print $devicegroup->name;
 
 The returned hash contains instances of L<Net::Cisco::ISE::NetworkDeviceGroup>, using name (typically the device group name) as the hash key. Using a call to C<devicegroups> with no arguments will retrieve all device groups and can take quite a few seconds (depending on the size of your database). When you know the device group or ID, use the L<devicegroups> call with arguments as listed below.
 	
-	my $devicegroup = $acs->networkdevicegroups("name","All Locations::Main Site"); # Faster
+	my $devicegroup = $ise->networkdevicegroups("name","All Locations::Main Site"); # Faster
 	# or
-	my $devicegroup = $acs->networkdevicegroups("id","123"); # Faster
+	my $devicegroup = $ise->networkdevicegroups("id","b74a0ee4-b29c-ag57-05a1-4c806751ace9"); # Faster
 	print $devicegroup->name;
 
 The ID is typically generated by Cisco ISE when the entry is created. It can be retrieved by calling the C<id> method on the object.
@@ -1045,17 +988,20 @@ This method created a new entry in Cisco ISE, depending on the argument passed. 
 	print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
 
-	my $device = $acs->networkdevices("name","Main_Router");
+	my $device = $ise->networkdevices("name","Main_Router");
 	$device->name("AltRouter"); # Required field
 	$device->description("Standby Router"); 
+
+    # UPDATE THIS PART!!!
 	$device->ips([{netMask => "32", ipAddress=>"10.0.0.2"}]); # Change IP address! Overlap check is enforced!
 	$device->id(0); # Required for new device!
-	my $id = $acs->create($device);
+	my $id = $ise->create($device);
 	# Create new device based on Net::Cisco::ISE::NetworkDevice instance
 	# Return value is ID generated by ISE
 	print "Record ID is $id" if $id;
 	print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
+	# <------ UNTIL HERE!!
 
 Multiple instances can be passed as an argument. Objects will be created in bulk (one transaction). The returned ID is not guaranteed to be the IDs of the created objects.
 
@@ -1090,17 +1036,19 @@ This method updates an existing entry in Cisco ISE, depending on the argument pa
 	print "Record ID is $id" if $id;
 	print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
-
-	my $device = $acs->networkdevices("name","Main_Router");
+    
+	# UPDATE THIS PART!!!
+	my $device = $ise->networkdevices("name","Main_Router");
 	$user->description("To be ceased"); # Change description
 	$device->ips([{netMask => "32", ipAddress=>"10.0.0.2"}]); # or Change IP address. Overlap check is enforced!
-	my $id = $acs->update($device);
+	my $id = $ise->update($device);
 	# Create new device based on Net::Cisco::ISE::NetworkDevice instance
 	# Return value is ID generated by ISE
 	print "Record ID is $id" if $id;
 	print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
-
+	# <------ UNTIL HERE!!
+	
 Multiple instances can be passed as an argument. Objects will be updated in bulk (one transaction). The returned ID is not guaranteed to be the IDs of the created objects.
 
 	my $user = $ise->internalusers("name","admin");
@@ -1117,20 +1065,22 @@ Multiple instances can be passed as an argument. Objects will be updated in bulk
 	# print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
 
-	my $device = $acs->networkdevices("name","Main_Router");
+	# UPDATE THIS PART!!!	
+	my $device = $ise->networkdevices("name","Main_Router");
 	$device->description("Main Router"); 
 	$device->ips([{netMask => "32", ipAddress=>"10.0.0.1"}]); # Change IP address! Overlap check is enforced!
 
-	my $device2 = $acs->networkdevices("name","Alt_Router");
+	my $device2 = $ise->networkdevices("name","Alt_Router");
 	$device2->description("Standby Router"); 
 	$device2->ips([{netMask => "32", ipAddress=>"10.0.0.2"}]); # Change IP address! Overlap check is enforced!
 	
-    my $id = $acs->create($device,$device2);
+    my $id = $ise->create($device,$device2);
 	# Update devices based on Net::Cisco::ISE::NetworkDevice instances in arguments
 	# Return value is ID generated by ISE but not guaranteed.
 	# print "Record ID is $id" if $id;
 	# print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure    
+	# <------ UNTIL HERE!!
     
 =item delete
 
