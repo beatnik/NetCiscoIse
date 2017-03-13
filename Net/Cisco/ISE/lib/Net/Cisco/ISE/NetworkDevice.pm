@@ -15,7 +15,7 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/networkdevice/",
-					"create" => "/ers/config/networkdevice/",
+			"create" => "/ers/config/networkdevice/",
                		"update" => "/ers/config/networkdevice/",
                 	"getById" => "/ers/config/networkdevice/",
            ); 
@@ -44,6 +44,7 @@ has 'authenticationSettings' => (
 has 'coaPort' => (
 	is => 'rw',
 	isa => 'Str',
+	default => '1700',
 );
 
 has 'profileName' => (
@@ -96,7 +97,7 @@ has 'trustsecsettings' => (
 sub toXML
 { my $self = shift;
   my $result = "";
-  my $id = $self->id;
+  my $id = $self->id || "";
   my $name = $self->name || "";
   my $description = $self->description || "";
   if ($self->authenticationSettings)
@@ -196,13 +197,10 @@ if ($self->trustsecsettings)
   if ($self->trustsecsettings->{"deviceAuthenticationSettings"})
   { my $sgadeviceid = $self->trustsecsettings->{"deviceAuthenticationSettings"}{"sgaDeviceId"} || "";
     my $sgadevicepassword = $self->trustsecsettings->{"deviceAuthenticationSettings"}{"sgaDevicePassword"} || "";
-   $result .= <<XML;
-<deviceAuthenticationSettings>
-<sgaDeviceId>$sgadeviceid</sgaDeviceId>
-<sgaDevicePassword>$sgadevicepassword</sgaDevicePassword>
-</deviceAuthenticationSettings>
-XML
-
+    $result .= qq(<deviceAuthenticationSettings>\n);
+    $result .= qq(<sgaDeviceId>$sgadeviceid</sgaDeviceId>\n); 
+    $result .= qq(<sgaDevicePassword>$sgadevicepassword</sgaDevicePassword>\n);
+    $result .= qq(</deviceAuthenticationSettings>\n);
   }
   if ($self->trustsecsettings->{"sgaNotificationAndUpdates"})
   { my $sendconfigurationtodeviceusing = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"sendConfigurationToDeviceUsing"} || "";
@@ -214,34 +212,31 @@ XML
     my $reauthenticationeveryxseconds = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"reAuthenticationEveryXSeconds"} || "";
     my $sendconfigurationtodevice = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"sendConfigurationToDevice"} || ""; 
     my $othersgadevicestotrustthisdevice = $self->trustsecsettings->{"sgaNotificationAndUpdates"}{"otherSGADevicesToTrustThisDevice"} || "";
-   $result .= <<XML;
-<sgaNotificationAndUpdates>
-<sendConfigurationToDeviceUsing>$sendconfigurationtodeviceusing</sendConfigurationToDeviceUsing>
-<downlaodPeerAuthorizationPolicyEveryXSeconds>$downloadpeerauthorizationpolicyeveryxseconds</downlaodPeerAuthorizationPolicyEveryXSeconds>
-<downlaodEnvironmentDataEveryXSeconds>$downloadenvironmentdataeveryxseconds</downlaodEnvironmentDataEveryXSeconds>
-<reAuthenticationEveryXSeconds>$reauthenticationeveryxseconds</reAuthenticationEveryXSeconds>
-<sendConfigurationToDevice>$sendconfigurationtodevice</sendConfigurationToDevice>
-<otherSGADevicesToTrustThisDevice>$othersgadevicestotrustthisdevice</otherSGADevicesToTrustThisDevice>
-<downloadSGACLListsEveryXSeconds>$downloadsgaccllistseveryxseconds</downloadSGACLListsEveryXSeconds>
-</sgaNotificationAndUpdates>
-XML
 
+    $result .= qq(<sgaNotificationAndUpdates>\n);
+    $result .= qq(<sendConfigurationToDeviceUsing>$sendconfigurationtodeviceusing</sendConfigurationToDeviceUsing>\n);
+    $result .= qq(<downlaodPeerAuthorizationPolicyEveryXSeconds>$downloadpeerauthorizationpolicyeveryxseconds</downlaodPeerAuthorizationPolicyEveryXSeconds>\n);
+    $result .= qq(<downlaodEnvironmentDataEveryXSeconds>$downloadenvironmentdataeveryxseconds</downlaodEnvironmentDataEveryXSeconds>\n);
+    $result .= qq(<reAuthenticationEveryXSeconds>$reauthenticationeveryxseconds</reAuthenticationEveryXSeconds>\n);
+    $result .= qq(<sendConfigurationToDevice>$sendconfigurationtodevice</sendConfigurationToDevice>\n);
+    $result .= qq(<otherSGADevicesToTrustThisDevice>$othersgadevicestotrustthisdevice</otherSGADevicesToTrustThisDevice>\n);
+    $result .= qq(<downloadSGACLListsEveryXSeconds>$downloadsgaccllistseveryxseconds</downloadSGACLListsEveryXSeconds>\n);
+    $result .= qq(</sgaNotificationAndUpdates>\n);
   }
   if ($self->trustsecsettings->{"deviceConfigurationDeployment"})
   { my $includewhendeployingsgtupdates =  $self->trustsecsettings->{"deviceConfigurationDeployment"}{"includeWhenDeployingSGTUpdates"} || "";
     my $execmodeusername = $self->trustsecsettings->{"deviceConfigurationDeployment"}{"execModeUsername"} || "";
     my $enablemodepassword = $self->trustsecsettings->{"deviceConfigurationDeployment"}{"enableModePassword"} || "";
     my $execmodepassword = $self->trustsecsettings->{"deviceConfigurationDeployment"}{"execModePassword"} || "";
-   $result .= <<XML;
-<deviceConfigurationDeployment>
-<includeWhenDeployingSGTUpdates></includeWhenDeployingSGTUpdates>
-<execModeUsername>$execmodeusername</execModeUsername>
-<enableModePassword>$enablemodepassword</enableModePassword>
-<execModePassword>$execmodepassword</execModePassword>
-</deviceConfigurationDeployment>
-XML
 
+    $result .= qq(<deviceConfigurationDeployment>\n);
+    $result .= qq(<includeWhenDeployingSGTUpdates></includeWhenDeployingSGTUpdates>\n);
+    $result .= qq(<execModeUsername>$execmodeusername</execModeUsername>\n);
+    $result .= qq(<enableModePassword>$enablemodepassword</enableModePassword>\n);
+    $result .= qq(<execModePassword>$execmodepassword</execModePassword>\n);
+    $result .= qq(</deviceConfigurationDeployment>\n);
   }
+
   $result .= qq(</trustsecsettings>\n);
 }
 # Not documented by Cisco ISE API:
@@ -261,28 +256,30 @@ sub header
 { my $self = shift;
   my $data = shift;
   my $record = shift;
-  my $name = $record->name || "";
+  my $name = $record->name || "Device Name";
   my $id = $record->id || "";
-  my $description = $record->description || "";
-  return qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns4:networkdevice description="$description" name="$name" id="$id" xmlns:ers="ers.ise.cisco.com" xmslns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns4="network.ers.ise.cisco.com">$data</ns4:networkdevice>};
+  my $description = $record->description || "Random Description";
+
+  return qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns4:networkdevice description="$description" name="$name" id="$id" xmlns:ers="ers.ise.cisco.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns4="network.ers.ise.cisco.com">$data</ns4:networkdevice>};
+
 }
 
 =pod
 
 =head1 NAME
 
-Net::Cisco::ISE::NetworkDevice - Access Cisco ISE functionality through REST API - NetworkDevice fields
+Net::Cisco::ISE::Device - Access Cisco ISE functionality through REST API - Device fields
 
 =head1 SYNOPSIS
 
 	use Net::Cisco::ISE;
-	use Net::Cisco::ISE::NetworkDevice;
+	use Net::Cisco::ISE::Device;
 	
 	my $ise = Net::Cisco::ISE->new(hostname => '10.0.0.1', username => 'acsadmin', password => 'testPassword');
 	
-	my %devices = $ise->networkdevices;
+	my %devices = $ise->devices;
 	# Retrieve all devices from ISE
-	# Returns hash with device name / Net::Cisco::ISE::NetworkDevice pairs
+	# Returns hash with device name / Net::Cisco::ISE::Device pairs
 
 	print $ise->devices->{"MAIN_Router"}->toXML;
 	# Dump in XML format (used by ISE for API calls)
@@ -290,40 +287,40 @@ Net::Cisco::ISE::NetworkDevice - Access Cisco ISE functionality through REST API
 	my $device = $ise->devices("name","MAIN_Router");
 	# Faster call to request specific device information by name
 
-	my $device = $ise->networkdevices("id","b74a0ef2-b29c-afee-0001-4c013751ace9");
-	# Faster call to request specific device information by ID (assigned by ISE, present in Net::Cisco::ISE::NetworkDevice)
+	my $device = $ise->devices("id","250");
+	# Faster call to request specific device information by ID (assigned by ISE, present in Net::Cisco::ISE::Device)
 
 	$device->id(0); # Required for new device!
 	my $id = $ise->create($device);
-	# Create new device based on Net::Cisco::ISE::NetworkDevice instance
+	# Create new device based on Net::Cisco::ISE::Device instance
 	# Return value is ID generated by ISE
 	print "Record ID is $id" if $id;
 	print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
 
 	my $id = $ise->update($device);
-	# Update existing device based on Net::Cisco::ISE::NetworkDevice instance
+	# Update existing device based on Net::Cisco::ISE::Device instance
 	# Return value is ID generated by ISE
 	print "Record ID is $id" if $id;
 	print $Net::Cisco::ISE::ERROR unless $id;
 	# $Net::Cisco::ISE::ERROR contains details about failure
 
 	$ise->delete($device);
-	# Delete existing device based on Net::Cisco::ISE::NetworkDevice instance
+	# Delete existing device based on Net::Cisco::ISE::Device instance
 
 =head1 DESCRIPTION
 
-The Net::Cisco::ISE::NetworkDevice class holds all the device relevant information from Cisco ISE 2.x
+The Net::Cisco::ISE::Device class holds all the device relevant information from Cisco ISE 5.x
 
 =head1 USAGE
 
-All calls are typically handled through an instance of the L<Net::Cisco::ISE> class. L<Net::Cisco::ISE::NetworkDevice> acts as a container for device group related information.
+All calls are typically handled through an instance of the L<Net::Cisco::ISE> class. L<Net::Cisco::ISE::Device> acts as a container for device group related information.
 
 =over 3
 
 =item new
 
-Class constructor. Returns object of Net::Cisco::ISE::NetworkDevice on succes. The following fields can be set / retrieved:
+Class constructor. Returns object of Net::Cisco::ISE::Device on succes. The following fields can be set / retrieved:
 
 =over 5
 
@@ -333,107 +330,31 @@ Class constructor. Returns object of Net::Cisco::ISE::NetworkDevice on succes. T
 
 =item name
 
-=item authenticationSettings
+=item tacacsConnection
 
-=item enableKeyWrap
+=item groupInfo 
 
-=item enabled
+=item legacyTACACS
 
-=item keyEncryptionKey
+=item tacacs_SharedSecret
 
-=item keyInputFormat
+=item singleConnect
 
-=item messageAuthenticatorCodeKey
+=item radius_SharedSecret
 
-=item networkProtocol
+=item subnets
 
-=item radiusSharedSecret
+=item ips
 
-=item coaPort
+=item location
 
-=item ipList
+=item deviceType
 
-=item ipaddress
+=item displayedInHex
 
-=item mask
+=item keyWrap
 
-=item ndgList
-
-=item modelName
-
-=item softwareVersion
-
-=item profileName
-
-=item snmpsettings
-
-=item linkTrapQuery
-
-=item macTrapQuery
-
-=item originatingPolicyServicesNode
-
-=item pollingInterval
-
-=item roCommunity
-
-=item version
-
-=item authPassword
-
-=item privacyProtocol
-
-=item securityLevel
-
-=item authProtocol
-
-=item userName
-
-=item privacyPassword
-
-=item tacacsSettings
-
-=item connectModeOptions
-
-=item sharedSecret
-
-=item previousSharedSecretExpiry
-
-=item previousSharedSecret
-
-=item trustsecsettings
-
-=item deviceAuthenticationSettings
-
-=item sgaDeviceId
-
-=item sgaDevicePassword
-
-=item deviceConfigurationDeployment
-
-=item enableModePassword
-
-=item execModePassword
-
-=item execModeUsername
-
-=item includeWhenDeployingSGTUpdates
-
-=item sgaNotificationAndUpdates
-
-=item downlaodEnvironmentDataEveryXSeconds
-
-=item downlaodPeerAuthorizationPolicyEveryXSeconds
-
-=item downloadSGACLListsEveryXSeconds
-
-=item otherSGADevicesToTrustThisDevice
-
-=item reAuthenticationEveryXSeconds
-
-=item sendConfigurationToDevice
-
-=item sendConfigurationToDeviceUsing
+=item portCOA
 
 =back
 
@@ -453,115 +374,63 @@ The device ID. Cisco ISE generates a unique ID for each Host record. This field 
 
 The device name, typically something like the sysName or hostname.
 
-=item authenticationSettings
+=item tacacsConnection
 
-The authentication settings (enableKeyWrap, enabled, keyEncryptionKey, keyInputFormat, messageAuthenticatorCodeKey, networkProtocol, radiusSharedSecret). Values are returned in a hash reference (case-sensitive).
+Boolean value (0 / 1) to indicate if TACACS+ is used on this device.
 
-=item enableKeyWrap
+=item groupInfo 
 
-=item enabled
+Read-only value that contains C<deviceType>, C<location> and other device type information. Only C<deviceType>, C<location> are retrievable by the respective methods.
 
-=item keyEncryptionKey
+=item legacyTACACS
 
-=item keyInputFormat
+Boolean value (0 / 1) that indicates support for legacy versions of TACACS+.
 
-=item messageAuthenticatorCodeKey
+=item tacacs_SharedSecret
 
-=item networkProtocol
+The shared key for TACACS+. When retrieving this information, the key is masked as **********.
 
-=item radiusSharedSecret
+=item singleConnect
 
-=item coaPort
+The TACACS+ singleConnect setting.
 
-=item ipList
+=item radius_SharedSecret
 
-=item ipaddress
+The shared key for RADIUS. When retrieving this information, the key is masked as **********.
 
-=item mask
+=item subnets
 
-=item ndgList
+Array reference that contains hash entries of all IP information for the device entry, separated as C<netMask> and C<ipAddress> keys. 
 
-=item modelName
+=item ips
 
-=item softwareVersion
+Cleaned up instance of C<subnet>.
 
-=item profileName
+=item location
 
-=item snmpsettings
+The device location field, as defined in C<groupInfo>.
 
-=item linkTrapQuery
+=item deviceType
 
-=item macTrapQuery
+The specific device Type field.
 
-=item originatingPolicyServicesNode
+=item displayedInHex
 
-=item pollingInterval
+Boolean value (0 / 1). Used for RADIUS configuration.
 
-=item roCommunity
+=item keyWrap
 
-=item version
+Boolean value (0 / 1). Used for RADIUS configuration.
 
-=item authPassword *undocumented*
+=item portCOA
 
-=item privacyProtocol *undocumented*
+TCP port for specific RADIUS purposes.
 
-=item securityLevel *undocumented*
-
-=item authProtocol *undocumented*
-
-=item userName *undocumented*
-
-=item privacyPassword *undocumented*
-
-=item tacacsSettings
-
-=item connectModeOptions
-
-=item sharedSecret
-
-=item previousSharedSecretExpiry *undocumented*
-
-=item previousSharedSecret *undocumented*
-
-=item trustsecsettings
-
-=item deviceAuthenticationSettings
-
-=item sgaDeviceId
-
-=item sgaDevicePassword
-
-=item deviceConfigurationDeployment
-
-=item enableModePassword
-
-=item execModePassword
-
-=item execModeUsername
-
-=item includeWhenDeployingSGTUpdates
-
-=item sgaNotificationAndUpdates
-
-=item downlaodEnvironmentDataEveryXSeconds
-
-=item downlaodPeerAuthorizationPolicyEveryXSeconds
-
-=item downloadSGACLListsEveryXSeconds
-
-=item otherSGADevicesToTrustThisDevice
-
-=item reAuthenticationEveryXSeconds
-
-=item sendConfigurationToDevice
-
-=item sendConfigurationToDeviceUsing
-
-=item  toXML
+=item toXML
 
 Dump the record in ISE accept XML formatting (without header).
 
-=item  header
+=item header
 
 Generate the correct XML header. Takes output of C<toXML> as argument.
 
@@ -569,13 +438,25 @@ Generate the correct XML header. Takes output of C<toXML> as argument.
 
 =over 3
 
+=item description 
+
+The device group account description, typically used for full device group name.
+
+=item groupType
+
+This points to the type of Device Group, typically Location or Device Type but can be customized. See also L<Net::Cisco::ISE::Device> C<deviceType>.
+
 =back
 
 =back
 
 =head1 BUGS
 
+
+
 =head1 SUPPORT
+
+
 
 =head1 AUTHOR
 
