@@ -14,7 +14,7 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/networkdevicegroup/",
-					"create" => "/ers/config/networkdevicegroup/",
+			"create" => "/ers/config/networkdevicegroup/",
                		"update" => "/ers/config/networkdevicegroup/",
                 	"getById" => "/ers/config/networkdevicegroup/",
            ); 
@@ -36,7 +36,7 @@ has 'name' => (
 	isa => 'Str',
 	);
 
-has 'groupType' => (
+has 'type' => (
 	is => 'rw',
 	isa => 'Str',
 	);
@@ -49,13 +49,11 @@ sub toXML
   my $id = $self->id;
   my $description = $self->description || "";
   my $name = $self->name || "";
-  my $grouptype = $self->groupType || "Location";
+  my $type = $self->type || "Location";
   if ($id) { $result = "   <id>$id</id>\n"; }
   
   $result = <<XML;
-<description>$description</description>
-<name>$name</name>
-<groupType>$grouptype</groupType>
+<type>$type</type>
 XML
 
   return $result;
@@ -63,10 +61,17 @@ XML
 
 sub header
 { my $self = shift;
-  my $devices = shift;
-  return qq(<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns1:deviceGroup xmlns:ns1="networkdevice.rest.mgmt.acs.nm.cisco.com">$devices</ns1:deviceGroup>);
+  my $data = shift;
+  my $record = shift;
+  my $name = $record->name || "Device Group Name";
+  my $id = $record->id || "";
+  my $description = $record->description || "Random Description";
+
+  return qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns4:networkdevicegroup description="$description" name="$name" id="$id" xmlns:ers="ers.ise.cisco.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns4="network.ers.ise.cisco.com">$data</ns4:networkdevicegroup>};
+
 }
-	
+
+
 =head1 NAME
 
 Net::Cisco::ISE::NetworkDeviceGroup - Access Cisco ISE functionality through REST API - DeviceGroup fields

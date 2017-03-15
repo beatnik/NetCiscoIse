@@ -16,7 +16,7 @@ use Data::Dumper;
 use Net::Cisco::ISE::InternalUser;
 use Net::Cisco::ISE::IdentityGroup;
 use Net::Cisco::ISE::NetworkDevice;
-#use Net::Cisco::ISE::NetworkDeviceGroup;
+use Net::Cisco::ISE::NetworkDeviceGroup;
 #use Net::Cisco::ISE::Endpoint;
 #use Net::Cisco::ISE::EndpointCertificate;
 #use Net::Cisco::ISE::EndpointIdentityGroup;
@@ -276,11 +276,11 @@ sub query
 	}
   }
   if ($type eq "NetworkDeviceGroup")
-  { #$action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"query"}; 
+  { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"query"}; 
     $mode = "NetworkDeviceGroups";
     $accepttype = "network.networkdevicegroup.1.1";
 	if ($key eq "id")
-	{ #$action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"getById"}.$value; 
+	{ $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"getById"}.$value; 
 	  $mode = "NetworkDeviceGroup";
 	}
   }
@@ -362,7 +362,7 @@ sub create
   }
   
   if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
-  { #$action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"create"}; 
+  { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"create"}; 
     $accepttype = "network.networkdevicegroup.1.1";
   }
 
@@ -436,7 +436,7 @@ sub update
   }
   
   if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
-  { #$action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"update"}; 
+  { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"update"}; 
     $accepttype = "network.networkdevicegroup.1.1";
   }
 
@@ -519,7 +519,7 @@ sub delete
   }
   
   if (ref($record) eq "Net::Cisco::ISE::NetworkDeviceGroup")
-  { #$action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"getById"}; 
+  { $action = $Net::Cisco::ISE::NetworkDeviceGroup::actions{"getById"}; 
     $type = "NetworkDeviceGroup";
     $accepttype = "network.networkdevicegroup.1.1";
   }
@@ -630,16 +630,16 @@ sub parse_xml
   { my $devicegroup_ref = $xmlout->{"resources"}{"resource"};
     my %devicegroups = ();
 	for my $key (keys % {$devicegroup_ref})
-    { #my $devicegroup = Net::Cisco::ISE::NetworkDeviceGroup->new( name => $key, %{ $devicegroup_ref->{$key} } );
-      #$devicegroups{$key} = $devicegroup;
+    { my $devicegroup = Net::Cisco::ISE::NetworkDeviceGroup->new( name => $key, %{ $devicegroup_ref->{$key} } );
+      $devicegroups{$key} = $devicegroup;
     }
 	$self->{"NetworkDeviceGroups"} = \%devicegroups;
 	return $self->{"NetworkDeviceGroups"};
   }
   if ($type eq "NetworkDeviceGroup") # deviceGroupByName and deviceGroupById DO NOT return hash but a single instance of Net::Cisco::ISE::NetworkDeviceGroup
   { my %devicegroup_hash = %{ $xmlout };
-    #my $devicegroup = Net::Cisco::ISE::NetworkDeviceGroup->new( %devicegroup_hash );
-	#$self->{"NetworkDeviceGroups"} = $devicegroup;
+    my $devicegroup = Net::Cisco::ISE::NetworkDeviceGroup->new( %devicegroup_hash );
+	$self->{"NetworkDeviceGroups"} = $devicegroup;
 	return $self->{"NetworkDeviceGroups"};
   }
   

@@ -7,4 +7,8 @@ use Data::Dumper;
 
 # users call only displayes a very limited set of information. Additional requests need to be made to retrieve explicit information
 my $ise = Net::Cisco::ISE->new(hostname => '10.0.0.1', username => 'admin', password => 'Secret');
-print Dumper $ise->networkdevicegroups(id=>"8dc77530-08c8-11e7-a0a4-005056ad14a4");
+my @devices = $ise->networkdevices(id=>"12345-12345-12345-1111");
+for my $device (@devices)
+{ my $result = $ise->delete($device);
+  print Dumper $result;
+}
