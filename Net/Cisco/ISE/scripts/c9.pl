@@ -11,13 +11,13 @@ my $devicegroup = Net::Cisco::ISE::NetworkDeviceGroup->new('name' => 'Location#A
 $devicegroup->id("12345-12345-12345-2222");
 $devicegroup->type("Location");
 $devicegroup->description("Roma, Italy");
-print $ise->create($devicegroup);
-my $id = $Net::Cisco::ISE::ERROR;
+$id = $ise->create($devicegroup);
+print $Net::Cisco::ISE::ERROR if $Net::Cisco::ISE::ERROR;
 print "Press enter to continue";
 <STDIN>;
 print Dumper $devicegroup;
 print "Press enter to continue";
+<STDIN>;
 $devicegroup->description("Rome, Italy");
 $ise->update($devicegroup);
-print $Net::Cisco::ISE::ERROR;
-
+print $Net::Cisco::ISE::ERROR if $Net::Cisco::ISE::ERROR;
