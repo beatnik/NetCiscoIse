@@ -66,6 +66,12 @@ has 'mock' => (
 	isa => 'Str',
 	default => '0',
 	);    
+
+has 'debug' => (
+    is => 'rw',
+    isa => 'Str',
+    default => '0',
+);
     
 sub internalusers # No Moose here :(
 {	my $self = shift;
@@ -78,7 +84,7 @@ sub internalusers # No Moose here :(
 	  if ($args{"id"})
 	  { $self->{"InternalUsers"} = $self->query("InternalUser","id",$args{"id"}); }
 	} else
-	{ $self->{"InternalUsers"} = $self->query("InternalUser"); 
+	{ $self->{"InternalUsers"} = $self->query("InternalUser");
 	}
 	return $self->{"InternalUsers"};
 }	
@@ -328,8 +334,11 @@ sub query
   $request->header('Authorization' => "Basic $credentials", Accept => "application/vnd.com.cisco.ise.$accepttype+xml");
   my $result = $useragent->request($request);
   if ($result->code eq "400") { $ERROR = "Bad Request - HTTP Status: 400"; }
-  if ($result->code eq "410") { $ERROR = "Unknown $type queried by name or ID - HTTP Status: 410"; }  
-  $self->parse_xml($mode, $result->content);
+  if ($result->code eq "410") { $ERROR = "Unknown $type queried by name or ID - HTTP Status: 410"; }
+  warn Dumper $result->content if $self->debug;
+  $result = $self->parse_xml($mode, $result->content);
+  warn Dumper $result if $self->debug;
+  return $result;
 }
 
 sub create 
@@ -595,6 +604,8 @@ sub parse_xml
   if ($type eq "IdentityGroups")
   { my $identitygroups_ref = $xmlout->{"resources"}{"resource"};
     my %identitygroups = ();
+    # With Single entry, this approach will break!!!
+    # !!BUG!!
     for my $key (keys % {$identitygroups_ref})
     { my $identitygroup = Net::Cisco::ISE::IdentityGroup->new( name => $key, %{ $identitygroups_ref->{$key} } );
       $identitygroups{$key} = $identitygroup;
@@ -1162,4 +1173,5 @@ __PACKAGE__->meta->make_immutable();
 
 1;
 # The preceding line will help the module return a true value
+
 

@@ -13,7 +13,7 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/internaluser/",
-			"create" => "/ers/config/internaluser/",
+        			"create" => "/ers/config/internaluser/",
                		"update" => "/ers/config/internaluser/",
                 	"getById" => "/ers/config/internaluser/",
            ); 
@@ -27,12 +27,12 @@ has 'email' => (
 
 has 'firstName' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 );
 
 has 'lastName' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 );
 
 has 'id' => (
@@ -42,17 +42,18 @@ has 'id' => (
 
 has 'identityGroups' => ( 
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 has 'name' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 has 'changePassword' => ( 
 	is => 'ro',
-	isa => 'Str',
+	isa => 'Any',
+    default => "",
 	);
 
 #has 'customAttributes' => ( 
@@ -63,32 +64,32 @@ has 'changePassword' => (
 
 has 'expiryDateEnabled' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 has 'expiryDate' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 );
 
 has 'enablePassword' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 has 'enabled' => (
 	is => 'rw', 
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 has 'password' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 has 'passwordIDStore' => (
 	is => 'rw',
-	isa => 'Str',
+	isa => 'Any',
 	);
 
 # No Moose	

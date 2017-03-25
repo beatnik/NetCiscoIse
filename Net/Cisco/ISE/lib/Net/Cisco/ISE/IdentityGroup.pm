@@ -13,7 +13,7 @@ BEGIN {
 };
 
     %actions = (	"query" => "/ers/config/identitygroup/",
-			"create" => "/ers/config/identitygroup/",
+                    "create" => "/ers/config/identitygroup/",
                		"update" => "/ers/config/identitygroup/",
                 	"getById" => "/ers/config/identitygroup/",
            ); 
