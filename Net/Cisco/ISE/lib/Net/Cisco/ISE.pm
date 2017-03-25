@@ -483,6 +483,7 @@ sub update
   $request->content_type("application/xml");  
   $request->header("Authorization" => "Basic $credentials", "Content-Type" => "application/vnd.com.cisco.ise.$accepttype+xml");
   $request->content($data);
+  warn Dumper $request if $self->debug;
   my $result = $useragent->request($request);
   my $id = "";
   if ($result->code ne "200")
