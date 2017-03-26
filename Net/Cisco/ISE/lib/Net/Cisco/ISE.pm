@@ -582,7 +582,7 @@ sub parse_xml
 { my $self = shift;
   my $type = shift;
   my $xml_ref = shift;
-  my $xmlsimple = XML::Simple->new();
+  my $xmlsimple = XML::Simple->new(SuppressEmpty => undef);
   my $xmlout = $xmlsimple->XMLin($xml_ref);
   if ($type eq "InternalUsers")
   { #my $users_ref = $xmlout->{"InternalUser"};

@@ -37,7 +37,7 @@ has 'lastName' => (
 
 has 'id' => (
       is  => 'rw',
-      isa => 'Str',
+      isa => 'Any',
   );
 
 has 'identityGroups' => ( 
@@ -128,7 +128,7 @@ sub toXML
   <lastName>$lastname</lastName>
   <password>$password</password> 
 XML
-
+warn $result;
 return $result;
 }
 
