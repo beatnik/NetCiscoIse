@@ -5,7 +5,7 @@ use Moose;
 BEGIN {
     use Exporter ();
     use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %actions);
-    $VERSION     = '0.03';
+    $VERSION     = '0.06';
     @ISA         = qw(Exporter);
     @EXPORT      = qw();
     @EXPORT_OK   = qw();
@@ -52,7 +52,7 @@ has 'name' => (
 
 has 'changePassword' => ( 
 	is => 'ro',
-	isa => 'Any',
+	isa => 'Maybe[Str]',
     default => "",
 	);
 

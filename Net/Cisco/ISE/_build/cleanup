@@ -1,6 +1,9 @@
 do{ my $x = {
        'Net-Cisco-ISE-0.01' => 1,
        'Net-Cisco-ISE-0.02' => 1,
+       'Net-Cisco-ISE-0.04' => 1,
+       'Net-Cisco-ISE-0.05' => 1,
+       'Net-Cisco-ISE-0.06' => 1,
        'blib' => 1
      };
 $x; }
